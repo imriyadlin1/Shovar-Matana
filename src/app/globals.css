@@ -1,0 +1,105 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground: #0f172a;
+  --background: #f4f7fb;
+  --hero-gradient: linear-gradient(125deg, #e8f1fb 0%, #f0f6fc 38%, #f8fafc 72%);
+}
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background-color: var(--background);
+  background-image: radial-gradient(ellipse 100% 80% at 100% 0%, rgba(21, 101, 192, 0.06), transparent 55%),
+    radial-gradient(ellipse 70% 50% at 0% 100%, rgba(15, 118, 110, 0.05), transparent 50%);
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+@layer components {
+  /* מיכל עמוד — ריווח אחיד בכל המסכים */
+  .page-shell {
+    @apply mx-auto max-w-6xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .page-shell-narrow {
+    @apply mx-auto max-w-3xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .eyebrow {
+    @apply text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-ink-faint;
+  }
+
+  .page-hero-title {
+    @apply text-3xl font-bold tracking-tight text-brand-deep sm:text-4xl;
+  }
+
+  .section-title {
+    @apply text-xl font-bold tracking-tight text-brand-deep;
+  }
+
+  .link-back {
+    @apply inline-flex w-fit text-sm font-medium text-ink-muted underline decoration-slate-300 underline-offset-4 transition hover:text-brand hover:decoration-brand/40;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-2xl bg-brand px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-brand-deep hover:shadow-md active:translate-y-0 active:scale-[0.99] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-2xl border border-slate-200/90 bg-surface px-5 py-2.5 text-sm font-semibold text-ink shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-brand/25 hover:bg-surface-muted hover:shadow-md active:translate-y-0 active:scale-[0.99] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .btn-cta {
+    @apply inline-flex items-center justify-center rounded-2xl bg-money px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-money-dark hover:shadow-md active:translate-y-0 active:scale-[0.99] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-money disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-medium text-ink-muted transition duration-200 hover:bg-slate-100 hover:text-ink active:scale-[0.99];
+  }
+
+  .input-field {
+    @apply w-full rounded-xl border border-slate-200/90 bg-surface px-4 py-3 text-sm leading-snug text-ink shadow-sm transition placeholder:text-ink-faint/90 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/15;
+  }
+
+  .card-elevated {
+    @apply rounded-3xl border border-slate-200/70 bg-surface shadow-card;
+  }
+
+  .card-elevated-interactive {
+    @apply card-elevated transition duration-200 hover:-translate-y-1 hover:border-brand/25 hover:shadow-card-hover;
+  }
+
+  .hero-surface {
+    background: var(--hero-gradient);
+  }
+
+  .auth-panel {
+    @apply card-elevated mx-auto mt-10 max-w-md p-8 sm:p-10;
+  }
+
+  .alert-danger {
+    @apply rounded-3xl border border-red-100/90 bg-red-50/95 px-5 py-4 text-sm leading-relaxed text-red-950 shadow-sm;
+  }
+
+  .alert-warn {
+    @apply rounded-3xl border border-amber-200/90 bg-amber-50/95 px-5 py-4 text-sm leading-relaxed text-amber-950 shadow-sm;
+  }
+
+  .label-form {
+    @apply flex flex-col gap-2 text-sm font-medium text-ink;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
