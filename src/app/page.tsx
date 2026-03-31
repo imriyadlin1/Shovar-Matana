@@ -53,7 +53,7 @@ export default async function HomePage() {
 
           <div className="mt-10 flex flex-wrap justify-center gap-3 md:mt-12">
             <Link
-              href="/auth/signup?next=%2Fdashboard%2Fnew"
+              href="/dashboard"
               className="btn-cta px-8 py-3.5 text-base font-bold"
             >
               בדקו מה יש לכם
@@ -124,7 +124,7 @@ export default async function HomePage() {
                 כשמשתמשים יפרסמו שוברים — תראו אותם כאן.
               </p>
               <Link
-                href="/auth/signup?next=%2Fdashboard%2Fnew"
+                href="/dashboard"
                 className="btn-cta mt-8 font-bold"
               >
                 בדקו מה יש לכם

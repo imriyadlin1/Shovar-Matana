@@ -36,7 +36,7 @@ function NavLink({
   );
 }
 
-export function HeaderChrome({ email, displayName, isAdmin }: NavSession) {
+export function HeaderChrome({ email, displayName, isAdmin, unreadConvCount }: NavSession) {
   const userLabel = displayName || email?.split("@")[0] || email;
 
   return (
@@ -100,10 +100,17 @@ export function HeaderChrome({ email, displayName, isAdmin }: NavSession) {
           </NavLink>
           {email ? (
             <>
-              <NavLink href="/dashboard">מרכז השוברים</NavLink>
+              <NavLink href="/dashboard">אזור אישי</NavLink>
               <NavLink href="/messages">
                 <>
-                  <MessageSquare className="size-3.5 opacity-70" aria-hidden />
+                  <span className="relative">
+                    <MessageSquare className="size-3.5 opacity-70" aria-hidden />
+                    {unreadConvCount > 0 && (
+                      <span className="absolute -right-1.5 -top-1.5 flex size-3.5 items-center justify-center rounded-full bg-red-500 text-[0.5rem] font-bold leading-none text-white ring-2 ring-white">
+                        {unreadConvCount > 9 ? "9+" : unreadConvCount}
+                      </span>
+                    )}
+                  </span>
                   צ׳אט עסקאות
                 </>
               </NavLink>

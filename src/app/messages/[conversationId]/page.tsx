@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ConversationChat } from "@/components/chat/ConversationChat";
+import { PaymentMethodPicker } from "@/components/chat/PaymentMethodPicker";
 import { getConversationThreadMeta } from "@/lib/messages/conversationMeta";
 import { createClient } from "@/lib/supabase/server";
 
@@ -56,6 +57,9 @@ export default async function ConversationPage({
             </Link>
           </p>
         )}
+        <div className="mt-5 border-t border-slate-100 pt-4">
+          <PaymentMethodPicker />
+        </div>
       </header>
 
       <ConversationChat

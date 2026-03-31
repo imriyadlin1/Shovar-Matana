@@ -59,7 +59,7 @@ export default function HowItWorksPage() {
         </ol>
 
         <div className="mt-14 flex flex-wrap justify-center gap-4">
-          <Link href="/auth/signup" className="btn-cta px-8">
+          <Link href="/dashboard" className="btn-cta px-8">
             בדקו מה יש לכם
           </Link>
           <Link href="/market" className="btn-secondary px-8">

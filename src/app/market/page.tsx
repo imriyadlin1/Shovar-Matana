@@ -92,7 +92,7 @@ export default async function MarketPage({
           </p>
           {!categoryFilter && (
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/auth/signup?next=%2Fdashboard%2Fnew" className="btn-cta justify-center font-bold">
+              <Link href="/dashboard" className="btn-cta justify-center font-bold">
                 בדקו מה יש לכם
               </Link>
               <Link href="/dashboard" className="btn-secondary justify-center font-semibold">
