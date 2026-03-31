@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Loader2 } from "lucide-react";
 import { Suspense, useEffect, useState } from "react";
 import { AuthToast, type AuthToastVariant } from "@/components/auth/AuthToast";
 import { safeNextPath } from "@/lib/auth/safeNext";
@@ -13,8 +14,9 @@ function LoginForm() {
   const params = useSearchParams();
   const next = safeNextPath(params.get("next"));
   const signupHref = `/auth/signup?next=${encodeURIComponent(next)}`;
+  const emailFromUrl = params.get("email") ?? "";
 
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(emailFromUrl);
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState<{ msg: string; variant: AuthToastVariant } | null>(null);
@@ -23,21 +25,22 @@ function LoginForm() {
     const err = params.get("error");
     if (err === "config") {
       setToast({
-        msg: "חסרות הגדרות Supabase (בדקו משתני סביבה ב-Vercel / .env.local).",
+        msg: "חסרות הגדרות חיבור. בדקו את משתני הסביבה.",
         variant: "error",
       });
       return;
     }
     if (err === "auth") {
       setToast({
-        msg: "הקישור מהמייל לא השלים את ההתחברות (פג תוקף או קישור שגוי). נסו להרשם מחדש או להתחבר עם סיסמה.",
-        variant: "error",
+        msg: "הקישור מהמייל לא יצר חיבור אוטומטי. הקלידו את הסיסמה כדי להיכנס.",
+        variant: "info",
       });
     }
   }, [params]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (loading) return;
     setLoading(true);
     setToast(null);
     try {
@@ -63,17 +66,17 @@ function LoginForm() {
         variant={toast?.variant ?? "error"}
         onDismiss={() => setToast(null)}
       />
-      <div className="auth-panel">
+      <div className="auth-panel animate-auth-panel-in">
         <p className="eyebrow">כניסה</p>
         <h1 className="mt-2 text-2xl font-bold text-brand-deep">ברוכים השבים</h1>
         <p className="mt-3 text-sm leading-relaxed text-ink-muted">
-          התחברו עם האימייל והסיסמה שאיתם נרשמתם.
+          הכנסו עם האימייל והסיסמה שבחרתם בהרשמה.
         </p>
         <p className="mt-4 rounded-xl border border-slate-200/80 bg-surface-muted/50 px-4 py-3 text-xs font-medium leading-relaxed text-ink-muted">
-          נרשמתם לאחרונה? <strong className="font-semibold text-ink">קודם לוחצים על הקישור במייל לאישור</strong>, ורק
-          אז ממלאים כאן — בלי אישור אי אפשר להיכנס עדיין, וזה חלק תקין מהתהליך.
+          נרשמתם לאחרונה? <strong className="font-semibold text-ink">קודם לחצו על הקישור במייל</strong> — בלי
+          אישור לא ניתן להיכנס.
         </p>
-        <form onSubmit={onSubmit} className="mt-8 flex flex-col gap-5">
+        <form onSubmit={onSubmit} className="mt-8 flex flex-col gap-5" aria-busy={loading}>
           <label className="label-form">
             אימייל
             <input
@@ -84,6 +87,7 @@ function LoginForm() {
               className="input-field"
               placeholder="you@example.com"
               required
+              disabled={loading}
             />
           </label>
           <label className="label-form">
@@ -95,16 +99,28 @@ function LoginForm() {
               onChange={(e) => setPassword(e.target.value)}
               className="input-field"
               required
+              disabled={loading}
             />
           </label>
-          <button type="submit" disabled={loading} className="btn-primary mt-1 py-3 disabled:opacity-60">
-            {loading ? "מתחברים…" : "כניסה לחשבון"}
+          <button
+            type="submit"
+            disabled={loading}
+            className="btn-primary mt-1 flex items-center justify-center gap-2 py-3 disabled:pointer-events-none disabled:opacity-60"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="size-5 shrink-0 animate-spin" aria-hidden />
+                נכנסים…
+              </>
+            ) : (
+              "כניסה"
+            )}
           </button>
         </form>
         <p className="mt-8 text-center text-sm text-ink-muted">
           עדיין אין חשבון?{" "}
           <Link href={signupHref} className="font-semibold text-brand hover:underline">
-            הרשמה קצרה
+            הרשמה
           </Link>
         </p>
       </div>

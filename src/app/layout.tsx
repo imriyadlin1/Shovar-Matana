@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { Heebo } from "next/font/google";
 import "./globals.css";
+import { Suspense } from "react";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
+import { WelcomeToast } from "@/components/auth/WelcomeToast";
 import { getNavSession } from "@/lib/auth/navSession";
 
 const heebo = Heebo({
@@ -33,6 +35,7 @@ export default async function RootLayout({
         <div className="flex-1">{children}</div>
         <SiteFooter />
         <BottomNav {...nav} />
+        <Suspense><WelcomeToast /></Suspense>
       </body>
     </html>
   );

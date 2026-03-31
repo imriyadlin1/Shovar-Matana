@@ -12,45 +12,39 @@ type Qa = { q: string; a: ReactNode };
 const items: Qa[] = [
   {
     q: "בקצרה: מה הזרימה?",
-    a: (
-      <>
-        מעלים שוברים למאגר האישי, רואים כמה הם שווים (נומינלי ומחיר שאתם מבקשים), ואז אם מתאים — משחררים
-        הצעה למסחר. מול קונים או מחליפים פוטנציאליים — ממשיכים בצ׳אט עד שמתקדמים או חוזרים אחורה.
-      </>
-    ),
+    a: "מעלים שוברים לכספת → רואים כמה שווה → מחליטים: לממש, למכור או להחליף → סוגרים בצ׳אט.",
   },
   {
-    q: "האם הכסף שלי „בטוח” במערכת?",
-    a: (
-      <>
-        המערכת לא מחזיקה את השובר הפיזי/הקוד בשבילכם — היא מתעדת מה יש לכם ומאפשרת תקשורת. שמרו על פרטי גישה
-        חזקים; מה שמוצג למסחר הוא מה שבחרתם לחשוף.
-      </>
-    ),
+    q: "איך אני יודע שהשובר אמיתי?",
+    a: "כל שובר מוזן ע״י בעליו. לפני סגירה — בקשו לראות קוד או אישור תוקף בצ׳אט. תמיד תוודאו פרטים לפני שמסכימים.",
   },
   {
-    q: "איך יוצרים קשר איתכם?",
+    q: "מה כדאי לבדוק לפני קנייה?",
+    a: "תוקף השובר, תנאי מימוש, וסכום בפועל. אל תעבירו תשלום לפני שווידאתם — כל הפרטים מתבררים בצ׳אט.",
+  },
+  {
+    q: "איך הצ׳אט עובד?",
+    a: "כשמצאתם שובר שמעניין אתכם — פותחים שיחה ישירה עם המציע. מחיר, תנאים והעברה — הכל ביניכם.",
+  },
+  {
+    q: "הכסף שלי בטוח?",
+    a: "המערכת לא מחזיקה כסף או קודי שוברים. היא מתעדת מה יש לכם ומחברת ביניכם — השאר בידיים שלכם.",
+  },
+  {
+    q: "אני חייב למכור?",
+    a: "לא. הכספת עובדת גם כרשימה אישית. המסחר אופציונלי — רק כשזה מתאים לכם.",
+  },
+  {
+    q: "איך יוצרים קשר אתכם?",
     a: (
       <>
         דרך{" "}
         <Link href="/contact" className="font-semibold text-brand hover:underline">
           יצירת קשר
         </Link>
-        . אם משהו טכני נשבר — כתבו מה ניסיתם ומה קיבלתם במסך.
+        . אם משהו לא עובד — ספרו מה ניסיתם ומה ראיתם.
       </>
     ),
-  },
-  {
-    q: "מה קורה אם יש מחלוקת על עסקה?",
-    a: "הצ׳אט מתעד שיחה — לא פסיקה. מחלוקות על תשלום, הקפאה או תוקף שובר הן ביניכם או עם ייעוץ משפטי. אנחנו כאן לתשתית, לא לבוררות.",
-  },
-  {
-    q: "זה אומר שאני חייב למכור?",
-    a: "לא. אפשר להשתמש רק כמאגר ערכי: לראות כמה „כסף שוכב” בצד. המסחר הוא שלב אופציונלי כשמתאים לכם.",
-  },
-  {
-    q: "איך מסירים שובר או מפסיקים להציע אותו?",
-    a: "במרכז הניהול אפשר לנהל סטטוס ופרסום. אם משהו בטופס מפריע לכם — עדיפות לשלוח משוב דרך יצירת הקשר.",
   },
 ];
 
@@ -59,24 +53,27 @@ export default function FaqPage() {
     <main className="page-shell pb-24 pt-12 md:pb-28 md:pt-16">
       <div className="mx-auto max-w-3xl">
         <p className="eyebrow">שאלות נפוצות</p>
-        <h1 className="mt-3 page-hero-title">לפני שמתחילים — בלי קסמים</h1>
-        <p className="mt-5 max-w-2xl text-base leading-relaxed text-ink-muted">
-          שאלות שמגיעות מאנשים שבאמת רוצים להפסיק לאבד ערך על שוברים, לא קטלוג שאלות גנרי.
-        </p>
+        <h1 className="mt-3 page-hero-title">שאלות ותשובות</h1>
 
-        <dl className="mt-14 space-y-5">
+        <dl className="mt-12 space-y-4">
           {items.map((item) => (
             <div
               key={item.q}
-              className="card-elevated px-6 py-7 transition duration-200 hover:shadow-card-hover sm:px-8"
+              className="card-elevated px-6 py-6 transition duration-200 hover:shadow-card-hover sm:px-8"
             >
               <dt className="text-base font-bold text-brand-deep">{item.q}</dt>
-              <dd className="mt-3 text-sm leading-relaxed text-ink-muted">{item.a}</dd>
+              <dd className="mt-2 text-sm leading-relaxed text-ink-muted">{item.a}</dd>
             </div>
           ))}
         </dl>
 
-        <p className="mt-14 text-center text-sm text-ink-muted">
+        <div className="mt-12 card-elevated border-money/15 bg-money/5 px-6 py-5 text-center sm:px-8">
+          <p className="text-sm font-semibold text-money-dark">
+            תמיד וודאו פרטים לפני סגירת עסקה. המערכת מחברת ביניכם — האחריות היא שלכם.
+          </p>
+        </div>
+
+        <p className="mt-10 text-center text-sm text-ink-muted">
           עדיין לא ברור?{" "}
           <Link href="/contact" className="font-semibold text-brand hover:underline">
             כתבו לנו

@@ -19,12 +19,20 @@ const surface: Record<AuthToastVariant, string> = {
   info: "border-slate-200/90 bg-surface text-ink shadow-card",
 };
 
-export function AuthToast({ message, variant = "error", onDismiss, durationMs = 7000 }: Props) {
+const defaultDuration: Record<AuthToastVariant, number> = {
+  error: 7000,
+  success: 5000,
+  info: 10000,
+};
+
+export function AuthToast({ message, variant = "error", onDismiss, durationMs }: Props) {
+  const duration = durationMs ?? defaultDuration[variant];
+
   useEffect(() => {
     if (!message) return;
-    const t = setTimeout(onDismiss, durationMs);
+    const t = setTimeout(onDismiss, duration);
     return () => clearTimeout(t);
-  }, [message, durationMs, onDismiss]);
+  }, [message, duration, onDismiss]);
 
   if (!message) return null;
 

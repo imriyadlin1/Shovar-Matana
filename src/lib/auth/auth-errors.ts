@@ -16,9 +16,8 @@ export function isAuthRateLimitMessage(message: string): boolean {
   );
 }
 
-/** הודעה אחידה למגבלת קצב — לטוסט אימות */
 export function authRateLimitToHebrew(): string {
-  return "נשלחו יותר מדי בקשות במייל. זו מגבלה זמנית של המערכת — חכו כמה דקות ונסו שוב.";
+  return "כבר שלחנו מייל לאחרונה. חכו כמה דקות ונסו שוב.";
 }
 
 export function signupErrorToHebrew(message: string): string {
@@ -32,15 +31,15 @@ export function signupErrorToHebrew(message: string): string {
     m.includes("user already") ||
     m.includes("email address is already")
   ) {
-    return "האימייל הזה כבר רשום. אפשר להתחבר, או לאפס סיסמה מהמסך הזה.";
+    return "האימייל הזה כבר רשום. נסו להתחבר.";
   }
   if (m.includes("password") && (m.includes("least") || m.includes("short") || m.includes("weak"))) {
-    return "הסיסמה קצרה מדי או חלשה מדי. נסו שילוב ארוך יותר.";
+    return "הסיסמה קצרה מדי. נסו שילוב ארוך יותר.";
   }
   if (m.includes("invalid") && m.includes("email")) {
-    return "כתובת האימייל לא נראית תקינה. בדקו הקלדה.";
+    return "כתובת האימייל לא תקינה. בדקו הקלדה.";
   }
-  return "משהו השתבש בהרשמה. נסו שוב בעוד רגע.";
+  return "משהו השתבש. נסו שוב בעוד רגע.";
 }
 
 export function loginErrorToHebrew(message: string): string {
@@ -55,7 +54,7 @@ export function loginErrorToHebrew(message: string): string {
     m.includes("confirm your email") ||
     (m.includes("signup") && m.includes("not completed"))
   ) {
-    return "האימייל עדיין לא אושר — בדקו את תיבת הדואר וגם את הספאם, ולחצו על קישור האישור. רק אחרי זה אפשר להתחבר. לא מופיע מייל? חזרו להרשמה ולחצו על שליחת מייל האישור מחדש.";
+    return "עדיין לא אישרתם את המייל. בדקו את התיבה (גם ספאם), לחצו על הקישור, ואז נסו שוב.";
   }
   if (
     m.includes("invalid login") ||
@@ -64,7 +63,7 @@ export function loginErrorToHebrew(message: string): string {
     m.includes("wrong password") ||
     m.includes("invalid password")
   ) {
-    return "אימייל או סיסמה לא מתאימים. בדקו או אפסו סיסמה ב-Supabase אם הוגדר.";
+    return "אימייל או סיסמה לא מתאימים. בדקו שוב.";
   }
   if (m.includes("invalid") && m.includes("email")) {
     return "כתובת האימייל לא תקינה.";
@@ -74,9 +73,9 @@ export function loginErrorToHebrew(message: string): string {
 
 export function authResendErrorToHebrew(message: string): string {
   if (isAuthRateLimitMessage(message)) {
-    return authRateLimitToHebrew();
+    return "בדקו את המייל שכבר שלחנו. אפשר לבקש חדש בעוד כמה דקות.";
   }
-  return "לא הצלחנו לשלוח עכשיו. נסו שוב בעוד רגע; אם זה נמשך, בדקו שהאימייל נכון.";
+  return "לא הצלחנו לשלוח עכשיו. נסו שוב בעוד רגע.";
 }
 
 /** מגבלת קצב לפי הודעה או קוד סטטוס HTTP מהלקוח */

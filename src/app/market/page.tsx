@@ -41,14 +41,15 @@ export default async function MarketPage({
 
   return (
     <main className="page-shell py-14 pb-24 md:py-16">
-      <header className="max-w-3xl">
-        <p className="eyebrow">שוברים שמשתמשים בחרו לפתוח</p>
-        <h1 className="mt-3 page-hero-title">מחפשים הזדמנות מול שובר אמיתי?</h1>
-        <p className="mt-5 text-base font-medium leading-relaxed text-ink-muted md:text-lg">
-          כל רשומה כאן הוזנה על ידי אדם אחר לכספת שלו ואז פורסמה בהסכמתו. תראו{" "}
-          <strong className="font-semibold text-ink">כמה כבר שולם על הנייר</strong> לעומת{" "}
-          <strong className="font-semibold text-ink">מה הוא מבקש עכשיו</strong>
-          — ככה בונים תחושת עסקה. סגירה? רק בצ׳אט איתו או איתה.
+      <header className="max-w-2xl">
+        <h1 className="page-hero-title">שוברים פתוחים</h1>
+        <p className="mt-4 text-base font-medium leading-relaxed text-ink-muted">
+          כל שובר כאן פורסם ע&quot;י משתמש אמיתי — עם ערך על הנייר ומחיר מבוקש.
+          <br />
+          מצאתם עסקה? פותחים צ׳אט וסוגרים ישירות.
+        </p>
+        <p className="mt-3 text-xs font-semibold text-ink-faint">
+          תמיד וודאו פרטים לפני סגירת עסקה. דברו עם המציע בצ׳אט.
         </p>
       </header>
 
@@ -67,25 +68,24 @@ export default async function MarketPage({
       )}
 
       {!errMsg && !assets?.length && (
-        <div className="card-elevated mt-14 flex flex-col items-center px-8 py-16 text-center md:mt-16 md:py-20">
-          <h2 className="section-title">אין עדיין שוברים פתוחים להצגה</h2>
-          <p className="mt-4 max-w-lg text-sm font-medium leading-relaxed text-ink-muted">
-            מישהו צריך ראשון לבנות כספת ולפרסם הצעה. אם זה אתם — התחילו מהדשבורד. אם לא — חזרו אחרי שתבנו
-            כספת משלכם כדי לעקוב אחרי מה שנפתח.
+        <div className="card-elevated mt-14 flex flex-col items-center px-8 py-14 text-center md:mt-16">
+          <h2 className="section-title">אין עדיין שוברים פתוחים</h2>
+          <p className="mt-3 max-w-md text-sm font-medium text-ink-muted">
+            עדיין לא פורסמו הצעות. בנו כספת, העלו שובר ופרסמו — או חזרו מאוחר יותר.
           </p>
-          <div className="mt-10 flex w-full max-w-md flex-col gap-3 sm:flex-row sm:justify-center">
-            <Link href="/dashboard/new" className="btn-cta justify-center font-bold">
-              פרסמו שובר מהכספת שלכם
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <Link href="/auth/signup?next=%2Fdashboard%2Fnew" className="btn-cta justify-center font-bold">
+              פתחו כספת
             </Link>
             <Link href="/dashboard" className="btn-secondary justify-center font-semibold">
-              חזרה לכספת
+              יש לי חשבון — לכספת
             </Link>
           </div>
         </div>
       )}
 
       {!!assets?.length && (
-        <ul className="mt-14 grid gap-6 sm:grid-cols-2 lg:mt-16 lg:grid-cols-3">
+        <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:mt-14 lg:grid-cols-3">
           {assets.map((a) => (
             <li key={a.id}>
               <MarketAssetCard asset={a} />

@@ -46,7 +46,7 @@ function SignupForm() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (loading || cooldownSecondsLeft > 0) return;
+    if (formLocked) return;
 
     setLoading(true);
     setToast(null);
@@ -93,10 +93,7 @@ function SignupForm() {
       }
 
       if (u?.email_confirmed_at) {
-        setToast({
-          msg: "החשבון פעיל — התחברו עם האימייל והסיסמה.",
-          variant: "info",
-        });
+        setToast({ msg: "החשבון פעיל — התחברו.", variant: "info" });
         router.push(loginHref);
         return;
       }
@@ -107,7 +104,7 @@ function SignupForm() {
         return;
       }
 
-      setToast({ msg: "לא קיבלנו אישור מהשרת. נסו שוב.", variant: "error" });
+      setToast({ msg: "משהו השתבש. נסו שוב.", variant: "error" });
     } catch {
       setToast({ msg: "לא הצלחנו ליצור את החשבון. נסו שוב.", variant: "error" });
     } finally {
@@ -122,18 +119,13 @@ function SignupForm() {
         variant={toast?.variant ?? "error"}
         onDismiss={() => setToast(null)}
       />
-      <div className="auth-panel">
+      <div className="auth-panel animate-auth-panel-in">
         <p className="eyebrow">הרשמה</p>
         <h1 className="mt-2 text-2xl font-bold text-brand-deep">חשבון חדש</h1>
         <p className="mt-3 text-sm leading-relaxed text-ink-muted">
-          כספת אישית לשוברים — כסף שכבר שילמתם ומגיע לכם לממש או להחליף. אחרי פתיחת החשבון תוסיפו שוברים
-          מהרשימה.
+          כספת אישית לשוברים שכבר שילמתם עליהם. הרשמו כדי לנהל, להחליף או למכור.
         </p>
-        <form
-          onSubmit={onSubmit}
-          className="mt-8 flex flex-col gap-5"
-          aria-busy={loading}
-        >
+        <form onSubmit={onSubmit} className="mt-8 flex flex-col gap-5" aria-busy={loading}>
           <label className="label-form">
             שם מלא
             <input
@@ -174,31 +166,12 @@ function SignupForm() {
             />
           </label>
 
-          <div
-            className="flex gap-4 rounded-2xl border-2 border-brand/25 bg-brand-faint/70 px-4 py-4 md:px-5 md:py-5"
-            role="note"
-          >
-            <div
-              className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-white text-brand shadow-sm ring-1 ring-brand/15"
-              aria-hidden
-            >
-              <Mail className="size-5 stroke-[1.75]" />
-            </div>
-            <div className="min-w-0 text-start">
-              <p className="text-sm font-bold text-brand-deep">רגע לפני שליחה</p>
-              <p className="mt-2 text-sm font-medium leading-relaxed text-ink">
-                כדי <strong className="font-bold text-ink">להפעיל את החשבון</strong> תצטרכו{" "}
-                <strong className="font-bold text-ink">לאשר את האימייל</strong> — מיד אחרי השליחה נשלח
-                אליכם קישור. בלי לחיצה עליו לא תוכלו להתחבר.
-              </p>
-              <p
-                className="mt-3 text-xs font-medium leading-relaxed text-ink-muted"
-                dir="ltr"
-                lang="en"
-              >
-                You will need to confirm your email to activate your account.
-              </p>
-            </div>
+          <div className="flex items-start gap-3 rounded-xl border border-brand/20 bg-brand-faint/60 px-4 py-3.5">
+            <Mail className="mt-0.5 size-5 shrink-0 text-brand" strokeWidth={1.75} aria-hidden />
+            <p className="text-sm font-medium leading-relaxed text-ink">
+              אחרי השליחה נשלח לכם <strong className="font-bold">מייל אישור</strong>.
+              צריך ללחוץ על הקישור שם כדי להפעיל את החשבון.
+            </p>
           </div>
 
           <button
@@ -209,12 +182,12 @@ function SignupForm() {
             {loading ? (
               <>
                 <Loader2 className="size-5 shrink-0 animate-spin" aria-hidden />
-                שולחים וממתינים לתשובה…
+                שולחים…
               </>
             ) : cooldownSecondsLeft > 0 ? (
-              `מגבלת שליחות — נסו שוב בעוד ${cooldownSecondsLeft} שנ׳`
+              `אפשר לנסות שוב בעוד ${cooldownSecondsLeft} שנ׳`
             ) : (
-              "שליחה והמשך"
+              "הרשמה"
             )}
           </button>
         </form>
