@@ -6,7 +6,7 @@ import type { MarketAssetCardData } from "@/components/market/MarketAssetCard";
 function chatErrorLabel(code: string, detail?: string) {
   const labels: Record<string, string> = {
     not_found: "העמוד הזה כבר לא זמין או שאין גישה אליו.",
-    not_listed: "השובר לא מוצע כרגע למסחר — לא ניתן לפתוח צ׳אט.",
+    not_listed: "השובר לא מוצע כרגע — לא ניתן לפתוח צ׳אט.",
     db: "משהו השתבש ביצירת השיחה. נסו שוב; אם חוזר, בדקו שהמיגרציות הורצו ב-Supabase.",
     missing_asset: "חסר מזהה שובר.",
   };
@@ -41,12 +41,14 @@ export default async function MarketPage({
 
   return (
     <main className="page-shell py-14 pb-24 md:py-16">
-      <header className="max-w-2xl">
-        <p className="eyebrow">המשך מהמאגר</p>
-        <h1 className="mt-3 page-hero-title">שוברים שמישהו כבר הציע למסחר</h1>
-        <p className="mt-5 text-base leading-relaxed text-ink-muted md:text-lg">
-          זה לא „שוק כללי” נפרד — זה הרחבה מסודרת אחרי שסידרתם את מה שלכם במרכז הניהול. כל הצעה פתוחה כאן
-          זמינה לעיון; סגירת עסקה — בצ׳אט עם המציע.
+      <header className="max-w-3xl">
+        <p className="eyebrow">שוברים שמשתמשים בחרו לפתוח</p>
+        <h1 className="mt-3 page-hero-title">מחפשים הזדמנות מול שובר אמיתי?</h1>
+        <p className="mt-5 text-base font-medium leading-relaxed text-ink-muted md:text-lg">
+          כל רשומה כאן הוזנה על ידי אדם אחר לכספת שלו ואז פורסמה בהסכמתו. תראו{" "}
+          <strong className="font-semibold text-ink">כמה כבר שולם על הנייר</strong> לעומת{" "}
+          <strong className="font-semibold text-ink">מה הוא מבקש עכשיו</strong>
+          — ככה בונים תחושת עסקה. סגירה? רק בצ׳אט איתו או איתה.
         </p>
       </header>
 
@@ -65,17 +67,20 @@ export default async function MarketPage({
       )}
 
       {!errMsg && !assets?.length && (
-        <div className="card-elevated mt-14 flex flex-col items-center px-8 py-20 text-center md:mt-16 md:py-24">
-          <span className="text-4xl opacity-[0.35]" aria-hidden>
-            ◇
-          </span>
-          <h2 className="mt-8 section-title">עדיין אין שוברים בחלון המסחר</h2>
-          <p className="mt-4 max-w-md text-sm leading-relaxed text-ink-muted">
-            כשתפרסמו שובר מהמאגר — הוא יופיע כאן. רוצים להתחיל? הוסיפו רשומה ראשונה במרכז הניהול.
+        <div className="card-elevated mt-14 flex flex-col items-center px-8 py-16 text-center md:mt-16 md:py-20">
+          <h2 className="section-title">אין עדיין שוברים פתוחים להצגה</h2>
+          <p className="mt-4 max-w-lg text-sm font-medium leading-relaxed text-ink-muted">
+            מישהו צריך ראשון לבנות כספת ולפרסם הצעה. אם זה אתם — התחילו מהדשבורד. אם לא — חזרו אחרי שתבנו
+            כספת משלכם כדי לעקוב אחרי מה שנפתח.
           </p>
-          <Link href="/dashboard" className="btn-primary mt-10">
-            למרכז השוברים
-          </Link>
+          <div className="mt-10 flex w-full max-w-md flex-col gap-3 sm:flex-row sm:justify-center">
+            <Link href="/dashboard/new" className="btn-cta justify-center font-bold">
+              פרסמו שובר מהכספת שלכם
+            </Link>
+            <Link href="/dashboard" className="btn-secondary justify-center font-semibold">
+              חזרה לכספת
+            </Link>
+          </div>
         </div>
       )}
 

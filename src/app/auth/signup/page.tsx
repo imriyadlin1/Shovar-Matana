@@ -2,9 +2,15 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useState } from "react";
+import { Loader2, Mail } from "lucide-react";
+import { Suspense, useEffect, useState } from "react";
+import { AuthToast, type AuthToastVariant } from "@/components/auth/AuthToast";
 import { safeNextPath } from "@/lib/auth/safeNext";
+import { isAuthRateLimitError, signupErrorToHebrew } from "@/lib/auth/auth-errors";
+import { setPendingSignup } from "@/lib/auth/pendingSignupStorage";
 import { createClient } from "@/lib/supabase/client";
+
+const SIGNUP_RATE_LIMIT_COOLDOWN_MS = 3 * 60 * 1000;
 
 function SignupForm() {
   const router = useRouter();
@@ -15,28 +21,95 @@ function SignupForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState<{ msg: string; variant: AuthToastVariant } | null>(null);
+  const [submitCooldownUntil, setSubmitCooldownUntil] = useState<number | null>(null);
+  const [, setCooldownTick] = useState(0);
+
+  useEffect(() => {
+    if (!submitCooldownUntil) return;
+    const id = window.setInterval(() => {
+      setCooldownTick((n) => n + 1);
+      if (Date.now() >= submitCooldownUntil) {
+        setSubmitCooldownUntil(null);
+        window.clearInterval(id);
+      }
+    }, 1000);
+    return () => window.clearInterval(id);
+  }, [submitCooldownUntil]);
+
+  const cooldownSecondsLeft =
+    submitCooldownUntil && submitCooldownUntil > Date.now()
+      ? Math.max(0, Math.ceil((submitCooldownUntil - Date.now()) / 1000))
+      : 0;
+  const formLocked = loading || cooldownSecondsLeft > 0;
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (loading || cooldownSecondsLeft > 0) return;
+
     setLoading(true);
-    setError(null);
+    setToast(null);
     try {
       const supabase = createClient();
-      const { error: err } = await supabase.auth.signUp({
-        email,
+      const redirectTo =
+        typeof window !== "undefined"
+          ? `${window.location.origin}/auth/callback?${new URLSearchParams({ next }).toString()}`
+          : "";
+
+      const { data, error: err } = await supabase.auth.signUp({
+        email: email.trim(),
         password,
-        options: { data: { full_name: fullName } },
+        options: {
+          data: { full_name: fullName.trim() || undefined },
+          emailRedirectTo: redirectTo || undefined,
+        },
       });
+
       if (err) {
-        setError(err.message);
+        setToast({ msg: signupErrorToHebrew(err.message), variant: "error" });
+        if (isAuthRateLimitError(err)) {
+          setSubmitCooldownUntil(Date.now() + SIGNUP_RATE_LIMIT_COOLDOWN_MS);
+        }
         return;
       }
-      router.push(next);
-      router.refresh();
+
+      const u = data.user;
+      const emailNorm = (u?.email ?? email.trim()).trim();
+
+      if (u && !u.email_confirmed_at) {
+        if (data.session) {
+          await supabase.auth.signOut();
+        }
+        setPendingSignup(emailNorm, next);
+        router.replace("/auth/pending-confirmation");
+        return;
+      }
+
+      if (data.session) {
+        router.push(next);
+        router.refresh();
+        return;
+      }
+
+      if (u?.email_confirmed_at) {
+        setToast({
+          msg: "החשבון פעיל — התחברו עם האימייל והסיסמה.",
+          variant: "info",
+        });
+        router.push(loginHref);
+        return;
+      }
+
+      if (emailNorm) {
+        setPendingSignup(emailNorm, next);
+        router.replace("/auth/pending-confirmation");
+        return;
+      }
+
+      setToast({ msg: "לא קיבלנו אישור מהשרת. נסו שוב.", variant: "error" });
     } catch {
-      setError("לא הצלחנו ליצור את החשבון. נסו שוב.");
+      setToast({ msg: "לא הצלחנו ליצור את החשבון. נסו שוב.", variant: "error" });
     } finally {
       setLoading(false);
     }
@@ -44,13 +117,23 @@ function SignupForm() {
 
   return (
     <main className="page-shell-narrow pb-20 pt-10 md:pb-28 md:pt-14">
+      <AuthToast
+        message={toast?.msg ?? null}
+        variant={toast?.variant ?? "error"}
+        onDismiss={() => setToast(null)}
+      />
       <div className="auth-panel">
         <p className="eyebrow">הרשמה</p>
         <h1 className="mt-2 text-2xl font-bold text-brand-deep">חשבון חדש</h1>
         <p className="mt-3 text-sm leading-relaxed text-ink-muted">
-          כמה שדות — ואפשר לאסוף שוברים במאגר, לראות שווי ולפתוח צ׳אט עד סגירת עסקה.
+          כספת אישית לשוברים — כסף שכבר שילמתם ומגיע לכם לממש או להחליף. אחרי פתיחת החשבון תוסיפו שוברים
+          מהרשימה.
         </p>
-        <form onSubmit={onSubmit} className="mt-8 flex flex-col gap-5">
+        <form
+          onSubmit={onSubmit}
+          className="mt-8 flex flex-col gap-5"
+          aria-busy={loading}
+        >
           <label className="label-form">
             שם מלא
             <input
@@ -60,6 +143,7 @@ function SignupForm() {
               onChange={(e) => setFullName(e.target.value)}
               className="input-field"
               placeholder="ישראל ישראלי"
+              disabled={formLocked}
             />
           </label>
           <label className="label-form">
@@ -72,6 +156,7 @@ function SignupForm() {
               className="input-field"
               placeholder="you@example.com"
               required
+              disabled={formLocked}
             />
           </label>
           <label className="label-form">
@@ -85,11 +170,52 @@ function SignupForm() {
               minLength={6}
               className="input-field"
               required
+              disabled={formLocked}
             />
           </label>
-          {error && <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-900">{error}</p>}
-          <button type="submit" disabled={loading} className="btn-cta mt-1 py-3 disabled:opacity-60">
-            {loading ? "יוצרים חשבון…" : "יצירת חשבון"}
+
+          <div
+            className="flex gap-4 rounded-2xl border-2 border-brand/25 bg-brand-faint/70 px-4 py-4 md:px-5 md:py-5"
+            role="note"
+          >
+            <div
+              className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-white text-brand shadow-sm ring-1 ring-brand/15"
+              aria-hidden
+            >
+              <Mail className="size-5 stroke-[1.75]" />
+            </div>
+            <div className="min-w-0 text-start">
+              <p className="text-sm font-bold text-brand-deep">רגע לפני שליחה</p>
+              <p className="mt-2 text-sm font-medium leading-relaxed text-ink">
+                כדי <strong className="font-bold text-ink">להפעיל את החשבון</strong> תצטרכו{" "}
+                <strong className="font-bold text-ink">לאשר את האימייל</strong> — מיד אחרי השליחה נשלח
+                אליכם קישור. בלי לחיצה עליו לא תוכלו להתחבר.
+              </p>
+              <p
+                className="mt-3 text-xs font-medium leading-relaxed text-ink-muted"
+                dir="ltr"
+                lang="en"
+              >
+                You will need to confirm your email to activate your account.
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={formLocked}
+            className="btn-cta flex items-center justify-center gap-2 py-3.5 text-base font-bold disabled:pointer-events-none disabled:opacity-60"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="size-5 shrink-0 animate-spin" aria-hidden />
+                שולחים וממתינים לתשובה…
+              </>
+            ) : cooldownSecondsLeft > 0 ? (
+              `מגבלת שליחות — נסו שוב בעוד ${cooldownSecondsLeft} שנ׳`
+            ) : (
+              "שליחה והמשך"
+            )}
           </button>
         </form>
         <p className="mt-8 text-center text-sm text-ink-muted">
