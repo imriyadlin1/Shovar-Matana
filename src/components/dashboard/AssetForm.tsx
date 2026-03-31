@@ -66,10 +66,10 @@ export function AssetForm({ userId }: Props) {
           .from("voucher-images")
           .upload(path, imageFile, { upsert: false });
         if (upErr) {
-          setError("העלאת התמונה נכשלה — נסו שוב.");
-          return;
+          console.warn("Image upload failed, continuing without image:", upErr.message);
+        } else {
+          imagePath = path;
         }
-        imagePath = path;
       }
 
       const { error: err } = await supabase.from("assets").insert({

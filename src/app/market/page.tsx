@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Suspense } from "react";
+import { Plus } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { MarketAssetCard } from "@/components/market/MarketAssetCard";
 import type { MarketAssetCardData } from "@/components/market/MarketAssetCard";
@@ -50,14 +51,20 @@ export default async function MarketPage({
 
   return (
     <main className="page-shell py-14 pb-24 md:py-16">
-      <header className="max-w-2xl">
-        <h1 className="page-hero-title">שוברים ממשתמשים אחרים</h1>
-        <p className="mt-4 text-base font-medium leading-relaxed text-ink-muted">
-          אפשר למצוא שוברים במחיר נמוך יותר מהשווי שלהם.
-        </p>
-        <p className="mt-3 text-xs font-semibold text-ink-faint">
-          תמיד בדקו את הפרטים לפני סגירת עסקה.
-        </p>
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="max-w-2xl">
+          <h1 className="page-hero-title">שוברים ממשתמשים אחרים</h1>
+          <p className="mt-4 text-base font-medium leading-relaxed text-ink-muted">
+            אפשר למצוא שוברים במחיר נמוך יותר מהשווי שלהם.
+          </p>
+          <p className="mt-3 text-xs font-semibold text-ink-faint">
+            תמיד בדקו את הפרטים לפני סגירת עסקה.
+          </p>
+        </div>
+        <Link href="/dashboard/new" className="btn-cta flex shrink-0 items-center gap-2 px-5 py-3 font-bold">
+          <Plus className="size-4" strokeWidth={2.5} aria-hidden />
+          הוספת שובר
+        </Link>
       </header>
 
       <div className="mt-8">

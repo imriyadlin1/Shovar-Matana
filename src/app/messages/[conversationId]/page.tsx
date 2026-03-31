@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { ConversationChat } from "@/components/chat/ConversationChat";
 import { PaymentMethodPicker } from "@/components/chat/PaymentMethodPicker";
 import { getConversationThreadMeta } from "@/lib/messages/conversationMeta";
+import { markConversationRead } from "@/lib/messages/markRead";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function ConversationPage({
@@ -35,6 +36,7 @@ export default async function ConversationPage({
       .select("id, body, sender_id, created_at")
       .eq("conversation_id", conversationId)
       .order("created_at", { ascending: true }),
+    markConversationRead(conversationId),
   ]);
 
   return (
@@ -58,7 +60,7 @@ export default async function ConversationPage({
           </p>
         )}
         <div className="mt-5 border-t border-slate-100 pt-4">
-          <PaymentMethodPicker />
+          <PaymentMethodPicker conversationId={conversationId} />
         </div>
       </header>
 

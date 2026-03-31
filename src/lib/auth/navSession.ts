@@ -42,10 +42,12 @@ async function countUnreadConversations(
   try {
     const { data: parts } = await supabase
       .from("conversation_participants")
-      .select("conversation_id")
+      .select("conversation_id, last_read_at")
       .eq("user_id", userId);
-    const convIds = [...new Set((parts ?? []).map((p) => p.conversation_id))];
-    if (!convIds.length) return 0;
+    if (!parts?.length) return 0;
+
+    const convIds = parts.map((p) => p.conversation_id);
+    const readMap = new Map(parts.map((p) => [p.conversation_id, p.last_read_at as string | null]));
 
     const { data: msgs } = await supabase
       .from("messages")
@@ -61,7 +63,11 @@ async function countUnreadConversations(
     for (const m of msgs) {
       if (seen.has(m.conversation_id)) continue;
       seen.add(m.conversation_id);
-      if (m.sender_id !== userId) count++;
+      if (m.sender_id === userId) continue;
+      const lastRead = readMap.get(m.conversation_id);
+      if (!lastRead || new Date(m.created_at) > new Date(lastRead)) {
+        count++;
+      }
     }
     return count;
   } catch {

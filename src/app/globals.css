@@ -5,7 +5,7 @@
 :root {
   --foreground: #0f172a;
   --background: #f4f7fb;
-  --hero-gradient: linear-gradient(125deg, #e8f1fb 0%, #f0f6fc 38%, #f8fafc 72%);
+  --hero-gradient: linear-gradient(125deg, #e3f2fd 0%, #ecfdf5 38%, #f8fafc 72%);
 }
 
 @layer base {
@@ -17,8 +17,10 @@
 body {
   color: var(--foreground);
   background-color: var(--background);
-  background-image: radial-gradient(ellipse 100% 80% at 100% 0%, rgba(21, 101, 192, 0.06), transparent 55%),
-    radial-gradient(ellipse 70% 50% at 0% 100%, rgba(15, 118, 110, 0.05), transparent 50%);
+  background-image:
+    radial-gradient(ellipse 100% 80% at 100% 0%, rgba(21, 101, 192, 0.07), transparent 55%),
+    radial-gradient(ellipse 80% 60% at 0% 100%, rgba(16, 185, 129, 0.06), transparent 50%),
+    radial-gradient(ellipse 50% 40% at 50% 50%, rgba(21, 101, 192, 0.02), transparent 80%);
   background-attachment: fixed;
   min-height: 100vh;
 }
@@ -58,7 +60,7 @@ body {
   }
 
   .btn-cta {
-    @apply inline-flex items-center justify-center rounded-2xl bg-money px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-money-dark hover:shadow-md active:translate-y-0 active:scale-[0.99] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-money disabled:pointer-events-none disabled:opacity-50;
+    @apply inline-flex items-center justify-center rounded-2xl bg-gradient-to-l from-money to-emerald-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition duration-200 hover:-translate-y-0.5 hover:from-money-dark hover:to-emerald-600 hover:shadow-md active:translate-y-0 active:scale-[0.99] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-money disabled:pointer-events-none disabled:opacity-50;
   }
 
   .btn-ghost {
