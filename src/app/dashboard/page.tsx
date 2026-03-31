@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { FileEdit, LayoutGrid, Layers, TrendingDown, Wallet } from "lucide-react";
+import { Eye, EyeOff, Package, Plus, ShoppingBag } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { formatNis } from "@/lib/format/nis";
 
@@ -10,22 +10,25 @@ const STATUS_LABEL: Record<string, string> = {
   sold: "נסגר",
 };
 
+const STATUS_COLOR: Record<string, string> = {
+  draft: "bg-slate-100 text-ink-muted",
+  listed: "bg-money/15 text-money-dark",
+  sold: "bg-brand-faint text-brand-deep",
+};
+
 type AssetRow = {
   id: string;
   title: string;
   nominal_value: number | string;
   ask_price: number | string;
   status: string;
+  category: string | null;
   created_at: string;
   sold_at: string | null;
 };
 
 function num(v: number | string): number {
   return typeof v === "number" ? v : parseFloat(String(v)) || 0;
-}
-
-function startOfLocalDay(d: Date) {
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
 }
 
 export default async function DashboardPage({
@@ -68,207 +71,164 @@ export default async function DashboardPage({
   }
 
   const rows = (assets ?? []) as AssetRow[];
-  const listed = rows.filter((a) => a.status === "listed").length;
-  const draft = rows.filter((a) => a.status === "draft").length;
+  const listedRows = rows.filter((a) => a.status === "listed");
+  const draftRows = rows.filter((a) => a.status === "draft");
+  const soldRows = rows.filter((a) => a.status === "sold");
 
-  const totalPaidNominal = rows.reduce((s, a) => s + num(a.nominal_value), 0);
-  const totalAskActive = rows.filter((a) => a.status !== "sold").reduce((s, a) => s + num(a.ask_price), 0);
-
-  const todayStart = startOfLocalDay(new Date());
-  const addedToday = rows.filter((a) => new Date(a.created_at).getTime() >= todayStart).length;
-
-  const weekAgo = new Date();
-  weekAgo.setDate(weekAgo.getDate() - 7);
-  const soldAll = rows.filter((a) => a.status === "sold").length;
-  const soldThisWeek = rows.filter(
-    (a) => a.status === "sold" && a.sold_at && new Date(a.sold_at) >= weekAgo,
-  ).length;
-
-  const metricClass =
-    "card-elevated group relative overflow-hidden p-6 transition duration-200 hover:-translate-y-0.5 hover:border-brand/20 hover:shadow-card-hover md:p-7";
+  const totalValue = rows.reduce((s, a) => s + num(a.nominal_value), 0);
+  const totalAsk = rows.filter((a) => a.status !== "sold").reduce((s, a) => s + num(a.ask_price), 0);
 
   return (
-    <main className="page-shell py-12 pb-24 md:py-16">
+    <main className="page-shell py-10 pb-24 md:py-14">
       {adminForbidden && (
-        <div className="alert-warn mb-10" role="status">
+        <div className="alert-warn mb-8" role="status">
           <p className="font-medium">גישה לניהול המערכת נחסמה</p>
           <p className="mt-1 text-sm opacity-95">
             החשבון שלכם אינו אדמין — הופניתם ללוח הרגיל.
           </p>
         </div>
       )}
-      <header className="max-w-2xl">
-        <p className="eyebrow">סקירה כספית אישית</p>
-        <h1 className="mt-3 page-hero-title">השוברים שלכם</h1>
-        <p className="mt-4 text-sm font-medium leading-relaxed text-ink-muted md:text-base">
-          כאן מרוכז <span className="text-ink">כל הכסף שכבר יצא על שוברים וזיכויים</span> — מה שמומש, מה שעדיין
-          „יושן”, ומה פתוח למסירה או להחלפה. מחוברים כ־
-          <span className="font-semibold text-brand-deep">{user.email}</span>
-        </p>
-      </header>
 
-      <section className="mt-10">
-        <div className="card-elevated relative overflow-hidden border-money/25 bg-gradient-to-br from-money-faint/90 via-surface to-brand-faint/40 p-8 shadow-card-hover md:p-10">
-          <div className="absolute end-0 top-0 size-32 rounded-full bg-money/10 blur-2xl" aria-hidden />
-          <div className="relative flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-            <div>
-              <p className="flex items-center gap-2 text-[0.65rem] font-bold uppercase tracking-[0.14em] text-money-dark">
-                <Wallet className="size-3.5" strokeWidth={2} aria-hidden />
-                סכום על הנייר · מה שכבר שילמתם בשוברים
-              </p>
-              <p className="mt-4 text-4xl font-black tabular-nums tracking-tight text-money-dark md:text-[2.75rem]">
-                {formatNis(Math.round(totalPaidNominal))}
-                <span className="ms-2 text-2xl font-extrabold text-money">₪</span>
-              </p>
-              <p className="mt-3 max-w-lg text-sm font-medium leading-relaxed text-ink-muted">
-                זה בסיס התזכורת: לא „יתרה עתידית”, אלא כסף שכבר הלך מהחשבון שלכם על מוצרים שלא נוצלו. ככל
-                שהמספר גבוה יותר — יותר מוטב לארגן ולהחליט מה לעשות עם כל פריט.
-              </p>
-            </div>
-            <div className="shrink-0 rounded-2xl border border-slate-200/80 bg-surface/95 px-6 py-5 text-start shadow-sm md:text-end">
-              <p className="text-[0.65rem] font-bold uppercase tracking-[0.12em] text-ink-faint">
-                סכום מבוקש (שוברים פעילים שלא נסגרו)
-              </p>
-              <p className="mt-2 text-2xl font-extrabold tabular-nums text-brand-deep">
-                {formatNis(Math.round(totalAskActive))} ₪
-              </p>
-              <p className="mt-1 text-xs text-ink-muted">מה שהגדרתם כיום כמחיר מבוקש אצלכם</p>
-            </div>
-          </div>
+      {/* ── Header + CTA ── */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-brand-deep md:text-3xl">השוברים שלי</h1>
+          <p className="mt-1 text-sm text-ink-muted">
+            {user.email}
+          </p>
         </div>
-      </section>
+        <Link href="/dashboard/new" className="btn-cta flex items-center gap-2 px-5 py-3 font-bold">
+          <Plus className="size-4" strokeWidth={2.5} aria-hidden />
+          הוספת שובר
+        </Link>
+      </div>
 
-      {rows.length > 0 && (
-        <div className="mt-6 grid gap-4 rounded-3xl border border-slate-200/80 bg-surface-muted/50 px-5 py-4 md:grid-cols-3 md:gap-3 md:px-6 md:py-5">
-          <div className="flex flex-col gap-1 border-slate-200/70 pb-4 md:border-e md:pb-0 md:pe-4">
-            <p className="text-[0.65rem] font-bold uppercase tracking-[0.12em] text-ink-faint">היום</p>
-            <p className="text-lg font-black tabular-nums text-brand-deep">+{addedToday}</p>
-            <p className="text-xs font-medium text-ink-muted">שוברים נוספו היום</p>
+      {/* ── Summary cards ── */}
+      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="card-elevated px-5 py-5">
+          <div className="flex items-center gap-2 text-xs font-semibold text-ink-faint">
+            <Package className="size-4" strokeWidth={2} aria-hidden />
+            סה״כ שוברים
           </div>
-          <div className="flex flex-col gap-1 border-slate-200/70 pb-4 md:border-e md:pb-0 md:pe-4">
-            <p className="text-[0.65rem] font-bold uppercase tracking-[0.12em] text-ink-faint">השבוע</p>
-            <p className="text-lg font-black tabular-nums text-brand-deep">{soldThisWeek}</p>
-            <p className="text-xs font-medium text-ink-muted">סגירות שסומנו בחשבון</p>
-          </div>
-          <div className="flex flex-col gap-1">
-            <p className="text-[0.65rem] font-bold uppercase tracking-[0.12em] text-ink-faint">מצטבר</p>
-            <p className="text-lg font-black tabular-nums text-brand-deep">{soldAll}</p>
-            <p className="text-xs font-medium text-ink-muted">סה״כ פריטים שסומנו כנסגרו</p>
-          </div>
+          <p className="mt-2 text-3xl font-black tabular-nums text-brand-deep">{rows.length}</p>
         </div>
-      )}
-
-      <div className="mt-10 grid gap-5 sm:grid-cols-3">
-        <div className={metricClass}>
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="eyebrow">סה״כ</p>
-              <p className="mt-3 text-3xl font-extrabold tabular-nums tracking-tight text-brand-deep md:text-[2rem]">
-                {rows.length}
-              </p>
-              <p className="mt-1 text-xs font-medium text-ink-faint">שוברים שתיעדתם</p>
-              <p className="mt-2 flex items-center gap-1 text-xs font-semibold text-red-700/90">
-                <TrendingDown className="size-3.5 shrink-0" aria-hidden />
-                כל שורה = כסף שכבר שילמתם
-              </p>
-            </div>
-            <span className="flex size-11 items-center justify-center rounded-2xl bg-brand-faint text-brand shadow-sm ring-1 ring-brand/10 transition group-hover:scale-105">
-              <Layers className="size-5" strokeWidth={2} aria-hidden />
-            </span>
+        <div className="card-elevated px-5 py-5">
+          <div className="flex items-center gap-2 text-xs font-semibold text-ink-faint">
+            <ShoppingBag className="size-4" strokeWidth={2} aria-hidden />
+            שווי כולל
           </div>
+          <p className="mt-2 text-3xl font-black tabular-nums text-money-dark">
+            {formatNis(Math.round(totalValue))} <span className="text-lg">₪</span>
+          </p>
         </div>
-        <div className={metricClass}>
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="eyebrow text-money">מוצגים החוצה</p>
-              <p className="mt-3 text-3xl font-extrabold tabular-nums tracking-tight text-money md:text-[2rem]">
-                {listed}
-              </p>
-              <p className="mt-1 text-xs font-medium text-ink-faint">מישהו אחר יכול להציע עליהם</p>
-            </div>
-            <span className="flex size-11 items-center justify-center rounded-2xl bg-money-faint text-money shadow-sm ring-1 ring-money/15 transition group-hover:scale-105">
-              <LayoutGrid className="size-5" strokeWidth={2} aria-hidden />
-            </span>
+        <div className="card-elevated px-5 py-5">
+          <div className="flex items-center gap-2 text-xs font-semibold text-money-dark">
+            <Eye className="size-4" strokeWidth={2} aria-hidden />
+            מפורסמים
           </div>
+          <p className="mt-2 text-3xl font-black tabular-nums text-money">{listedRows.length}</p>
         </div>
-        <div className={metricClass}>
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="eyebrow">רק אצלכם</p>
-              <p className="mt-3 text-3xl font-extrabold tabular-nums tracking-tight text-ink md:text-[2rem]">
-                {draft}
-              </p>
-              <p className="mt-1 text-xs font-medium text-ink-faint">עדיין לא גלויים לאחרים</p>
-            </div>
-            <span className="flex size-11 items-center justify-center rounded-2xl bg-surface-muted text-ink-muted shadow-sm ring-1 ring-slate-200/90 transition group-hover:scale-105">
-              <FileEdit className="size-5" strokeWidth={2} aria-hidden />
-            </span>
+        <div className="card-elevated px-5 py-5">
+          <div className="flex items-center gap-2 text-xs font-semibold text-ink-faint">
+            <EyeOff className="size-4" strokeWidth={2} aria-hidden />
+            לא מפורסמים
           </div>
+          <p className="mt-2 text-3xl font-black tabular-nums text-ink">{draftRows.length}</p>
+          {totalAsk > 0 && (
+            <p className="mt-1 text-xs text-ink-muted">
+              מחיר מבוקש כולל: {formatNis(Math.round(totalAsk))} ₪
+            </p>
+          )}
         </div>
       </div>
 
-      <section className="mt-14 md:mt-16">
-        <div className="flex flex-col gap-4 border-b border-slate-200/80 pb-6 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h2 className="section-title">השוברים שלכם</h2>
-            <p className="mt-2 text-sm font-medium text-ink-muted">
-              עדכנו מחיר מבוקש או פתחו לחשיפה — המשך מול קונים רק בצ׳אט
-            </p>
-          </div>
-          <Link href="/dashboard/new" className="btn-cta w-full shrink-0 justify-center text-center sm:w-auto">
-            + הוספת שובר
+      {/* ── Empty state ── */}
+      {!rows.length && (
+        <div className="card-elevated mt-10 border-dashed border-slate-300/80 bg-surface-muted/30 px-8 py-14 text-center">
+          <p className="text-xl font-bold text-brand-deep">עדיין לא הוספתם שוברים</p>
+          <p className="mx-auto mt-3 max-w-md text-sm font-medium text-ink-muted">
+            יש לכם שובר מתנה, זיכוי או הטבה שלא השתמשתם בהם? הוסיפו אותם כאן.
+          </p>
+          <Link href="/dashboard/new" className="btn-cta mx-auto mt-8 inline-flex min-w-[14rem] justify-center font-bold">
+            הוספת שובר ראשון
           </Link>
         </div>
-        {!rows.length ? (
-          <div className="card-elevated mt-8 border-dashed border-slate-300/80 bg-surface-muted/30 px-8 py-12 text-center shadow-sm md:px-10 md:py-14">
-            <p className="text-xl font-bold text-brand-deep">עדיין לא הוספתם שוברים</p>
-            <p className="mx-auto mt-4 max-w-md text-sm font-medium leading-relaxed text-ink-muted">
-              חפשו באימייל, באפליקציות ובחשבונות: כל שובר או זיכוי שלא מימשתם. שורה אחת תראה לכם מיד כמה
-              „נעלם” מהרדאר.
-            </p>
-            <ol className="mx-auto mt-8 max-w-md list-decimal space-y-2 pe-5 text-start text-sm font-medium text-ink md:text-base">
-              <li>לחצו על הכפתור למטה.</li>
-              <li>רשמו מה יש (למשל גיפט קארד) וכמה שילמתם עליו.</li>
-              <li>חזרו לכאן — התמונה הכספית תתעדכן מיד.</li>
-            </ol>
-            <Link href="/dashboard/new" className="btn-cta mx-auto mt-10 inline-flex min-w-[16rem] justify-center font-bold">
-              הוספת שובר ראשון
-            </Link>
-          </div>
-        ) : (
-          <ul className="mt-6 space-y-4">
-            {rows.map((a) => (
-              <li
-                key={a.id}
-                className="card-elevated flex flex-wrap items-center justify-between gap-4 px-5 py-5 transition duration-200 hover:border-money/25 hover:shadow-card-hover md:px-7"
-              >
-                <div className="min-w-0">
-                  <p className="font-semibold text-brand-deep">{a.title}</p>
-                  <div className="mt-3 flex flex-wrap items-baseline gap-x-4 gap-y-2">
-                    <p className="text-xl font-extrabold tabular-nums text-money">
-                      {formatNis(Math.round(num(a.nominal_value)))}{" "}
-                      <span className="text-sm font-bold text-ink-muted">₪ על הנייר</span>
-                    </p>
-                    <p className="text-sm font-semibold tabular-nums text-brand-deep">
-                      מבוקש כעת {formatNis(Math.round(num(a.ask_price)))} ₪
-                    </p>
-                    <span className="inline-flex rounded-lg bg-surface-muted px-2.5 py-0.5 text-xs font-bold text-ink-muted">
-                      {STATUS_LABEL[a.status] ?? a.status}
-                    </span>
-                  </div>
-                  <p className="mt-2 text-xs font-medium text-red-800/80">כסף שכבר שולם · עדיין לא מומש במלואו</p>
-                </div>
-                <Link
-                  href={`/dashboard/assets/${a.id}`}
-                  className="btn-secondary border-transparent bg-brand-faint/50 px-4 py-2 text-sm font-bold text-brand-deep transition hover:bg-brand hover:text-white"
-                >
-                  ניהול
-                </Link>
-              </li>
+      )}
+
+      {/* ── Published section ── */}
+      {listedRows.length > 0 && (
+        <section className="mt-10">
+          <h2 className="text-lg font-bold text-brand-deep">מפורסמים — גלויים לאחרים</h2>
+          <p className="mt-1 text-sm text-ink-muted">שוברים שמשתמשים אחרים יכולים לראות ולפנות אליכם בצ׳אט.</p>
+          <ul className="mt-5 space-y-3">
+            {listedRows.map((a) => (
+              <AssetListItem key={a.id} asset={a} />
             ))}
           </ul>
-        )}
-      </section>
+        </section>
+      )}
+
+      {/* ── Draft section ── */}
+      {draftRows.length > 0 && (
+        <section className="mt-10">
+          <h2 className="text-lg font-bold text-ink">רק אצלכם — טרם פורסמו</h2>
+          <p className="mt-1 text-sm text-ink-muted">שוברים ששמרתם אבל עדיין לא גלויים לאחרים.</p>
+          <ul className="mt-5 space-y-3">
+            {draftRows.map((a) => (
+              <AssetListItem key={a.id} asset={a} />
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {/* ── Sold section ── */}
+      {soldRows.length > 0 && (
+        <section className="mt-10">
+          <h2 className="text-lg font-bold text-ink-muted">נסגרו</h2>
+          <ul className="mt-5 space-y-3">
+            {soldRows.map((a) => (
+              <AssetListItem key={a.id} asset={a} />
+            ))}
+          </ul>
+        </section>
+      )}
     </main>
+  );
+}
+
+function AssetListItem({ asset }: { asset: AssetRow }) {
+  const nominal = num(asset.nominal_value);
+  const ask = num(asset.ask_price);
+
+  return (
+    <li className="card-elevated flex flex-wrap items-center justify-between gap-4 px-5 py-4 transition duration-200 hover:border-brand/15 hover:shadow-card-hover md:px-6">
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-center gap-2">
+          <p className="font-semibold text-brand-deep">{asset.title}</p>
+          {asset.category && (
+            <span className="rounded-full bg-accent-faint/80 px-2.5 py-0.5 text-[0.65rem] font-semibold text-accent ring-1 ring-accent/15">
+              {asset.category}
+            </span>
+          )}
+          <span className={`rounded-full px-2.5 py-0.5 text-[0.65rem] font-bold ${STATUS_COLOR[asset.status] ?? "bg-slate-100 text-ink-muted"}`}>
+            {STATUS_LABEL[asset.status] ?? asset.status}
+          </span>
+        </div>
+        <div className="mt-2 flex flex-wrap items-baseline gap-x-4 gap-y-1 text-sm">
+          <span className="font-bold tabular-nums text-money">
+            {formatNis(Math.round(nominal))} ₪ שווי
+          </span>
+          <span className="font-semibold tabular-nums text-brand-deep">
+            {formatNis(Math.round(ask))} ₪ מבוקש
+          </span>
+        </div>
+      </div>
+      <Link
+        href={`/dashboard/assets/${asset.id}`}
+        className="btn-secondary border-transparent bg-brand-faint/50 px-4 py-2 text-sm font-bold text-brand-deep transition hover:bg-brand hover:text-white"
+      >
+        ניהול
+      </Link>
+    </li>
   );
 }

@@ -51,7 +51,7 @@ function formatMessageTime(iso: string) {
 
 function DemoConversationPreview() {
   const rows = [
-    { side: "them" as const, text: "היי — השובר עדיין בתוקף? ראיתי 450 ₪ על הנייר." },
+    { side: "them" as const, text: "היי — השובר עדיין בתוקף? ראיתי שווי של 450 ₪." },
     { side: "me" as const, text: "כן. אפשר לסגור על 380 היום אם מעבירים מיד." },
     { side: "them" as const, text: "מתאים. מעביר אחרי שתשלח את הקוד בצ׳אט הזה בלבד." },
   ];

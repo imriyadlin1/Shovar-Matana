@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Eye, ListChecks, MessageCircle, ShieldCheck, SlidersHorizontal } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import { MarketAssetCard } from "@/components/market/MarketAssetCard";
 import { getListedAssetsPreview } from "@/lib/market/preview";
 
@@ -17,7 +17,7 @@ function VaultPreview() {
         {[
           { n: "3", label: "שוברים" },
           { n: "2", label: "פעילים" },
-          { n: "1", label: "מוצע למכירה" },
+          { n: "1", label: "למכירה" },
         ].map((s) => (
           <div key={s.label} className="flex-1 px-3 py-4">
             <p className="text-xl font-black tabular-nums text-brand-deep">{s.n}</p>
@@ -65,52 +65,26 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── What you get ── */}
+      {/* ── How it works (single section) ── */}
       <section className="border-t border-slate-200/50 bg-surface/80 py-16 md:py-20">
         <div className="page-shell">
-          <h2 className="text-center eyebrow">מה עושים פה בפועל?</h2>
-          <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {[
-              { icon: Eye, t: "רואים הכול במקום אחד", d: "כל השוברים, הזיכויים וההטבות שלכם מרוכזים יחד." },
-              { icon: SlidersHorizontal, t: "מבינים מה שווה לכם", d: "כמה זה שווה ומה כדאי לעשות עם זה." },
-              { icon: ListChecks, t: "מחליטים מה לעשות", d: "להשתמש, למכור או להעביר למישהו אחר." },
-              { icon: MessageCircle, t: "מדברים ישירות", d: "צ׳אט פשוט מול מי שמציע או מחפש שובר." },
-            ].map((x) => {
-              const Icon = x.icon;
-              return (
-                <li key={x.t} className="card-elevated px-6 py-7">
-                  <div className="inline-flex size-10 items-center justify-center rounded-xl bg-brand-faint text-brand ring-1 ring-brand/15">
-                    <Icon className="size-5" strokeWidth={2} aria-hidden />
-                  </div>
-                  <h3 className="mt-4 text-base font-bold text-brand-deep">{x.t}</h3>
-                  <p className="mt-2 text-sm font-medium leading-relaxed text-ink-muted">{x.d}</p>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      </section>
-
-      {/* ── How it works ── */}
-      <section className="py-16 md:py-20">
-        <div className="page-shell">
           <h2 className="text-center eyebrow">איך זה עובד?</h2>
-          <ol className="mt-12 grid gap-6 md:grid-cols-3">
+          <ol className="mx-auto mt-12 grid max-w-4xl gap-6 md:grid-cols-3">
             {[
               {
                 step: "1",
-                title: "מוסיפים את השוברים שלכם",
-                body: "מכניסים שוברים, זיכויים או הטבות שיש לכם.",
+                title: "מוסיפים שוברים",
+                body: "שובר מתנה, זיכוי, הטבה — מכניסים את השווי ובוחרים קטגוריה.",
               },
               {
                 step: "2",
-                title: "רואים מה יש לכם",
-                body: "הכול מרוכז במקום אחד וברור לעין.",
+                title: "רואים את התמונה",
+                body: "כמה שווה הכול, מה בשימוש ומה לא. הכול במסך אחד.",
               },
               {
                 step: "3",
-                title: "בוחרים מה לעשות",
-                body: "להשתמש, למכור או לדבר עם משתמשים אחרים.",
+                title: "משתמשים או מוכרים",
+                body: "מפרסמים לאחרים, ומי שמתעניין פונה ישירות בצ׳אט.",
               },
             ].map((item) => (
               <li
@@ -168,12 +142,12 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── Trust strip ── */}
+      {/* ── Trust ── */}
       <section className="py-14 md:py-16">
         <div className="page-shell">
           <div className="card-elevated flex flex-col gap-5 border-brand/10 bg-gradient-to-br from-brand-faint/50 via-surface to-accent-faint/30 px-8 py-8 shadow-md md:flex-row md:items-start md:justify-between md:px-10 md:py-10">
             {[
-              { t: "הכול במקום אחד", d: "כל השוברים שלכם מרוכזים ומסודרים." },
+              { t: "פרטיות מלאה", d: "השוברים שלכם נראים רק לכם — עד שתחליטו לפרסם." },
               { t: "בלי מתווך", d: "אתם מחליטים מה לפרסם, מתי ולמי." },
               { t: "סגירה בצ׳אט", d: "מחיר ותנאים ביניכם — ישירות." },
             ].map((x) => (

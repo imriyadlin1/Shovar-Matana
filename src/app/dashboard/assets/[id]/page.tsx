@@ -2,6 +2,12 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
+const STATUS_LABEL: Record<string, string> = {
+  draft: "רק אצלכם",
+  listed: "מוצג לאחרים",
+  sold: "נסגר",
+};
+
 type Props = { params: Promise<{ id: string }> };
 
 export default async function AssetDetailPage({ params }: Props) {
@@ -24,14 +30,11 @@ export default async function AssetDetailPage({ params }: Props) {
   return (
     <main className="mx-auto max-w-xl px-4 py-12">
       <Link href="/dashboard" className="text-sm font-semibold text-brand">
-        ← חזרה למרכז השוברים
+        ← חזרה לשוברים שלכם
       </Link>
       <h1 className="mt-4 text-2xl font-bold text-brand-deep">{asset.title}</h1>
       <p className="mt-2 text-slate-600">
-        {asset.nominal_value} ₪ נומינלי · {asset.ask_price} ₪ מבוקש · {asset.status}
-      </p>
-      <p className="mt-6 text-sm text-amber-800">
-        עריכה מלאה וצ׳אט — שלבים הבאים (Server Actions + Realtime).
+        {asset.nominal_value} ₪ שווי · {asset.ask_price} ₪ מבוקש · {STATUS_LABEL[asset.status] ?? asset.status}
       </p>
     </main>
   );

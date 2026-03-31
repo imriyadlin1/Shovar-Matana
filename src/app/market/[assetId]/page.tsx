@@ -35,7 +35,7 @@ export default async function MarketAssetPage({
     <main className="page-shell max-w-4xl py-10 pb-24 md:py-14">
       <nav className="text-sm text-ink-muted" aria-label="מיקום בעמוד">
         <Link href="/market" className="font-medium text-brand transition hover:underline">
-          שוברים פתוחים מהקהילה
+          שוברים ממשתמשים אחרים
         </Link>
         <span className="mx-2 text-ink-faint">/</span>
         <span className="text-ink">{asset.title}</span>
@@ -60,17 +60,17 @@ export default async function MarketAssetPage({
             )}
             {hasDeal && (
               <p className="mt-6 rounded-2xl border border-money/30 bg-money-faint/90 px-4 py-3 text-sm font-bold text-money-dark">
-                הזדמנות יחסית: המבוקש נמוך ב־{discountPct}% לעומת מה ששולם על הנייר (
-                {formatNis(Math.round(nominal - ask))} ₪ פחות מהערך המקורי). תנאי סופי — ביניכם בצ׳אט.
+                המחיר המבוקש נמוך ב־{discountPct}% מהשווי ({formatNis(Math.round(nominal - ask))} ₪ פחות).
+                סגירה — ביניכם בצ׳אט.
               </p>
             )}
             <p className="mt-8 rounded-2xl border border-red-100/90 bg-red-50/70 px-4 py-3 text-sm font-semibold text-red-950">
-              המציע שילם או קיבל במקור{" "}
-              <span className="tabular-nums">{formatNis(nominal)} ₪</span> על הנייר של השובר.
+              שווי השובר:{" "}
+              <span className="tabular-nums">{formatNis(nominal)} ₪</span>
             </p>
             <div className="mt-8 grid gap-8 border-t border-slate-100 pt-10 sm:grid-cols-2">
               <div>
-                <p className="eyebrow text-red-800/80">על הנייר · מה שכבר יצא</p>
+                <p className="eyebrow text-red-800/80">שווי השובר</p>
                 <p className="mt-2 text-3xl font-black tabular-nums text-ink md:text-[2.25rem]">
                   {formatNis(nominal)} ₪
                 </p>

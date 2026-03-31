@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { MarketAssetCard } from "@/components/market/MarketAssetCard";
 import type { MarketAssetCardData } from "@/components/market/MarketAssetCard";
+import { CategoryFilter } from "@/components/market/CategoryFilter";
 
 function chatErrorLabel(code: string, detail?: string) {
   const labels: Record<string, string> = {
@@ -17,21 +19,28 @@ function chatErrorLabel(code: string, detail?: string) {
 export default async function MarketPage({
   searchParams,
 }: {
-  searchParams: Promise<{ chatError?: string; detail?: string }>;
+  searchParams: Promise<{ chatError?: string; detail?: string; category?: string }>;
 }) {
   const sp = await searchParams;
   const chatError = sp.chatError;
   const detail = sp.detail;
+  const categoryFilter = sp.category ?? "";
   let assets: MarketAssetCardData[] | null = null;
   let errMsg: string | null = null;
 
   try {
     const supabase = await createClient();
-    const { data, error } = await supabase
+    let query = supabase
       .from("assets")
       .select("id, title, nominal_value, ask_price, category")
       .eq("status", "listed")
       .order("published_at", { ascending: false });
+
+    if (categoryFilter) {
+      query = query.eq("category", categoryFilter);
+    }
+
+    const { data, error } = await query;
 
     if (error) errMsg = error.message;
     else assets = (data ?? []) as MarketAssetCardData[];
@@ -51,6 +60,12 @@ export default async function MarketPage({
         </p>
       </header>
 
+      <div className="mt-8">
+        <Suspense>
+          <CategoryFilter />
+        </Suspense>
+      </div>
+
       {chatError && (
         <div className="alert-danger mt-10" role="alert">
           <p className="font-medium">לא נפתחה שיחה</p>
@@ -66,24 +81,30 @@ export default async function MarketPage({
       )}
 
       {!errMsg && !assets?.length && (
-        <div className="card-elevated mt-14 flex flex-col items-center px-8 py-14 text-center md:mt-16">
-          <h2 className="section-title">אין עדיין שוברים פתוחים</h2>
+        <div className="card-elevated mt-10 flex flex-col items-center px-8 py-14 text-center">
+          <h2 className="section-title">
+            {categoryFilter ? `אין שוברים בקטגוריה "${categoryFilter}"` : "אין עדיין שוברים פתוחים"}
+          </h2>
           <p className="mt-3 max-w-md text-sm font-medium text-ink-muted">
-            עדיין לא פורסמו שוברים. הוסיפו שוברים משלכם — או חזרו מאוחר יותר.
+            {categoryFilter
+              ? "נסו קטגוריה אחרת או חזרו מאוחר יותר."
+              : "עדיין לא פורסמו שוברים. הוסיפו שוברים משלכם — או חזרו מאוחר יותר."}
           </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Link href="/auth/signup?next=%2Fdashboard%2Fnew" className="btn-cta justify-center font-bold">
-              בדקו מה יש לכם
-            </Link>
-            <Link href="/dashboard" className="btn-secondary justify-center font-semibold">
-              יש לי חשבון — לדשבורד
-            </Link>
-          </div>
+          {!categoryFilter && (
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Link href="/auth/signup?next=%2Fdashboard%2Fnew" className="btn-cta justify-center font-bold">
+                בדקו מה יש לכם
+              </Link>
+              <Link href="/dashboard" className="btn-secondary justify-center font-semibold">
+                יש לי חשבון — לדשבורד
+              </Link>
+            </div>
+          )}
         </div>
       )}
 
       {!!assets?.length && (
-        <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:mt-14 lg:grid-cols-3">
+        <ul className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {assets.map((a) => (
             <li key={a.id}>
               <MarketAssetCard asset={a} />

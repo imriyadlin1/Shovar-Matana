@@ -21,7 +21,7 @@ export default async function MessagesPage() {
         <p className="eyebrow">צ׳אט עסקאות</p>
         <h1 className="mt-3 page-hero-title">סוגרים כאן — מחיר, זמן, שובר</h1>
         <p className="mt-4 max-w-lg text-sm font-medium leading-relaxed text-ink-muted md:text-base">
-          פחות „שלחתי הודעה”. יותר „סיכמנו”. מחשב: רשימה בצד · נייד: הכול למטה.
+          כאן סוגרים עסקאות. מחשב: רשימה בצד. נייד: הכול למטה.
         </p>
       </header>
 
@@ -35,11 +35,11 @@ export default async function MessagesPage() {
         </span>
         <p className="mt-6 max-w-sm text-base font-semibold text-brand-deep">בחרו שיחה מהרשימה בצד</p>
         <p className="mt-3 max-w-md text-sm leading-relaxed text-ink-muted">
-          בצ׳אט תסכמו עם הצד השני עד שיש ביניכם הבנה — זה השלב שלפני העברת השובר או התשלום מאחורי הקלעים.
+          בצ׳אט תסכמו עם הצד השני מחיר ותנאים — לפני העברת השובר או התשלום.
         </p>
         {!rows.length && (
           <Link href="/market" className="btn-primary mt-10">
-            לשוברים למסחר
+            לשוברים של אחרים
           </Link>
         )}
       </div>
