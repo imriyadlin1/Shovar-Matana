@@ -42,14 +42,12 @@ export default async function MarketPage({
   return (
     <main className="page-shell py-14 pb-24 md:py-16">
       <header className="max-w-2xl">
-        <h1 className="page-hero-title">שוברים פתוחים</h1>
+        <h1 className="page-hero-title">שוברים ממשתמשים אחרים</h1>
         <p className="mt-4 text-base font-medium leading-relaxed text-ink-muted">
-          כל שובר כאן פורסם ע&quot;י משתמש אמיתי — עם ערך על הנייר ומחיר מבוקש.
-          <br />
-          מצאתם עסקה? פותחים צ׳אט וסוגרים ישירות.
+          אפשר למצוא שוברים במחיר נמוך יותר מהשווי שלהם.
         </p>
         <p className="mt-3 text-xs font-semibold text-ink-faint">
-          תמיד וודאו פרטים לפני סגירת עסקה. דברו עם המציע בצ׳אט.
+          תמיד בדקו את הפרטים לפני סגירת עסקה.
         </p>
       </header>
 
@@ -71,14 +69,14 @@ export default async function MarketPage({
         <div className="card-elevated mt-14 flex flex-col items-center px-8 py-14 text-center md:mt-16">
           <h2 className="section-title">אין עדיין שוברים פתוחים</h2>
           <p className="mt-3 max-w-md text-sm font-medium text-ink-muted">
-            עדיין לא פורסמו הצעות. בנו כספת, העלו שובר ופרסמו — או חזרו מאוחר יותר.
+            עדיין לא פורסמו שוברים. הוסיפו שוברים משלכם — או חזרו מאוחר יותר.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link href="/auth/signup?next=%2Fdashboard%2Fnew" className="btn-cta justify-center font-bold">
-              פתחו כספת
+              בדקו מה יש לכם
             </Link>
             <Link href="/dashboard" className="btn-secondary justify-center font-semibold">
-              יש לי חשבון — לכספת
+              יש לי חשבון — לדשבורד
             </Link>
           </div>
         </div>

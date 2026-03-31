@@ -45,7 +45,7 @@ export function HeaderChrome({ email, displayName, isAdmin }: NavSession) {
         <div className="flex min-w-0 flex-1 items-center justify-between gap-3 md:contents">
           <Link href="/" className="group flex min-w-0 flex-col leading-tight transition active:scale-[0.99]">
             <span className="truncate text-lg font-bold tracking-tight text-brand-deep transition group-hover:text-brand">
-              הון כלוא
+              שובר מתנה
             </span>
             <span className="text-[0.65rem] font-medium uppercase tracking-[0.12em] text-ink-faint" lang="en">
               Vouchers · value back

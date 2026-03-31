@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { formatNis } from "@/lib/format/nis";
 
 const STATUS_LABEL: Record<string, string> = {
-  draft: "בכספת בלבד",
+  draft: "רק אצלכם",
   listed: "מוצג לאחרים",
   sold: "נסגר",
 };
@@ -55,7 +55,7 @@ export default async function DashboardPage({
     return (
       <main className="page-shell py-12 pb-20">
         <div className="alert-danger max-w-2xl">
-          <p className="font-semibold">לא נטענה הכספת</p>
+          <p className="font-semibold">לא נטענו השוברים</p>
           <p className="mt-2 text-sm opacity-90">
             בדקו חיבור ל-Supabase ושהמיגרציות הורצו. אם הבעיה נמשכת — עיינו בלוגים.
           </p>
@@ -99,7 +99,7 @@ export default async function DashboardPage({
       )}
       <header className="max-w-2xl">
         <p className="eyebrow">סקירה כספית אישית</p>
-        <h1 className="mt-3 page-hero-title">כספת השוברים שלכם</h1>
+        <h1 className="mt-3 page-hero-title">השוברים שלכם</h1>
         <p className="mt-4 text-sm font-medium leading-relaxed text-ink-muted md:text-base">
           כאן מרוכז <span className="text-ink">כל הכסף שכבר יצא על שוברים וזיכויים</span> — מה שמומש, מה שעדיין
           „יושן”, ומה פתוח למסירה או להחלפה. מחוברים כ־
@@ -143,7 +143,7 @@ export default async function DashboardPage({
           <div className="flex flex-col gap-1 border-slate-200/70 pb-4 md:border-e md:pb-0 md:pe-4">
             <p className="text-[0.65rem] font-bold uppercase tracking-[0.12em] text-ink-faint">היום</p>
             <p className="text-lg font-black tabular-nums text-brand-deep">+{addedToday}</p>
-            <p className="text-xs font-medium text-ink-muted">שוברים נוספו לכספת</p>
+            <p className="text-xs font-medium text-ink-muted">שוברים נוספו היום</p>
           </div>
           <div className="flex flex-col gap-1 border-slate-200/70 pb-4 md:border-e md:pb-0 md:pe-4">
             <p className="text-[0.65rem] font-bold uppercase tracking-[0.12em] text-ink-faint">השבוע</p>
@@ -162,7 +162,7 @@ export default async function DashboardPage({
         <div className={metricClass}>
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="eyebrow">בכספת</p>
+              <p className="eyebrow">סה״כ</p>
               <p className="mt-3 text-3xl font-extrabold tabular-nums tracking-tight text-brand-deep md:text-[2rem]">
                 {rows.length}
               </p>
@@ -210,18 +210,18 @@ export default async function DashboardPage({
       <section className="mt-14 md:mt-16">
         <div className="flex flex-col gap-4 border-b border-slate-200/80 pb-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className="section-title">השוברים בכספת</h2>
+            <h2 className="section-title">השוברים שלכם</h2>
             <p className="mt-2 text-sm font-medium text-ink-muted">
               עדכנו מחיר מבוקש או פתחו לחשיפה — המשך מול קונים רק בצ׳אט
             </p>
           </div>
           <Link href="/dashboard/new" className="btn-cta w-full shrink-0 justify-center text-center sm:w-auto">
-            + הוספת שובר לכספת
+            + הוספת שובר
           </Link>
         </div>
         {!rows.length ? (
           <div className="card-elevated mt-8 border-dashed border-slate-300/80 bg-surface-muted/30 px-8 py-12 text-center shadow-sm md:px-10 md:py-14">
-            <p className="text-xl font-bold text-brand-deep">הכספת ריקה — עדיין אין כסף מסודר כאן</p>
+            <p className="text-xl font-bold text-brand-deep">עדיין לא הוספתם שוברים</p>
             <p className="mx-auto mt-4 max-w-md text-sm font-medium leading-relaxed text-ink-muted">
               חפשו באימייל, באפליקציות ובחשבונות: כל שובר או זיכוי שלא מימשתם. שורה אחת תראה לכם מיד כמה
               „נעלם” מהרדאר.
@@ -232,7 +232,7 @@ export default async function DashboardPage({
               <li>חזרו לכאן — התמונה הכספית תתעדכן מיד.</li>
             </ol>
             <Link href="/dashboard/new" className="btn-cta mx-auto mt-10 inline-flex min-w-[16rem] justify-center font-bold">
-              הוספת שובר ראשון לכספת
+              הוספת שובר ראשון
             </Link>
           </div>
         ) : (

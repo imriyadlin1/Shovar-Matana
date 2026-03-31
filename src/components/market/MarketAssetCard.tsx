@@ -43,7 +43,7 @@ export function MarketAssetCard({ asset }: { asset: MarketAssetCardData }) {
 
         <div className="mt-4 flex flex-col gap-1.5 border-t border-slate-100 pt-4">
           <div className="flex items-baseline justify-between">
-            <span className="text-xs font-semibold text-ink-faint">ערך על הנייר</span>
+            <span className="text-xs font-semibold text-ink-faint">שווי השובר</span>
             <span className="text-base font-bold tabular-nums text-ink">{formatNis(nominal)} ₪</span>
           </div>
           <div className="flex items-baseline justify-between">

@@ -123,7 +123,7 @@ function SignupForm() {
         <p className="eyebrow">הרשמה</p>
         <h1 className="mt-2 text-2xl font-bold text-brand-deep">חשבון חדש</h1>
         <p className="mt-3 text-sm leading-relaxed text-ink-muted">
-          כספת אישית לשוברים שכבר שילמתם עליהם. הרשמו כדי לנהל, להחליף או למכור.
+          ריכוז כל השוברים והזיכויים שלכם במקום אחד — לנהל, להחליף או למכור.
         </p>
         <form onSubmit={onSubmit} className="mt-8 flex flex-col gap-5" aria-busy={loading}>
           <label className="label-form">

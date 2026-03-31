@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ContactForm } from "@/components/contact/ContactForm";
 
 export const metadata: Metadata = {
-  title: "יצירת קשר · הון כלוא",
+  title: "יצירת קשר · שובר מתנה",
   description: "משוב על שוברים, מסחר וצ׳אט — דברו איתנו.",
 };
 

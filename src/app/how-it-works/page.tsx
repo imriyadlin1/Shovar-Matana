@@ -1,30 +1,30 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { MessageCircle, Upload, Wallet } from "lucide-react";
+import { ListChecks, Plus, Eye } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "איך זה עובד · הון כלוא",
-  description: "שלושה צעדים: מעלים שוברים, רואים שווי, מחליטים.",
+  title: "איך זה עובד · שובר מתנה",
+  description: "שלושה צעדים: מוסיפים שוברים, רואים מה יש, בוחרים מה לעשות.",
 };
 
 const steps = [
   {
     n: 1,
-    title: "מעלים שוברים לכספת",
-    body: "כל שובר — סוג, ערך על הנייר, מחיר מבוקש. הכל אצלכם עד שתחליטו לפרסם.",
-    icon: Upload,
+    title: "מוסיפים את השוברים שלכם",
+    body: "מכניסים שוברים, זיכויים או הטבות שיש לכם.",
+    icon: Plus,
   },
   {
     n: 2,
-    title: "רואים כמה כסף תקוע",
-    body: "מספר אחד ברור: כמה שילמתם ועדיין לא חזר. זה מה שמניע להחליט.",
-    icon: Wallet,
+    title: "רואים מה יש לכם",
+    body: "הכול מרוכז במקום אחד וברור לעין.",
+    icon: Eye,
   },
   {
     n: 3,
-    title: "מוכרים, מחליפים או ממשים",
-    body: "פרסמו הצעה. מתעניינים פונים בצ׳אט. מחיר ותנאים — ביניכם.",
-    icon: MessageCircle,
+    title: "בוחרים מה לעשות",
+    body: "להשתמש, למכור או לדבר עם משתמשים אחרים.",
+    icon: ListChecks,
   },
 ];
 
@@ -32,9 +32,9 @@ export default function HowItWorksPage() {
   return (
     <main className="page-shell pb-24 pt-12 md:pb-28 md:pt-16">
       <div className="mx-auto max-w-5xl">
-        <p className="eyebrow text-center">איך זה עובד</p>
+        <p className="eyebrow text-center">איך זה עובד?</p>
         <h1 className="mx-auto mt-3 max-w-xl text-balance text-center page-hero-title">
-          מהשכחה לפעולה — בשלושה צעדים
+          שלושה צעדים פשוטים
         </h1>
 
         <ol className="mt-14 grid gap-8 lg:grid-cols-3 lg:gap-6">
@@ -60,10 +60,10 @@ export default function HowItWorksPage() {
 
         <div className="mt-14 flex flex-wrap justify-center gap-4">
           <Link href="/auth/signup" className="btn-cta px-8">
-            פתחו כספת
+            בדקו מה יש לכם
           </Link>
           <Link href="/market" className="btn-secondary px-8">
-            ראו מה מוצע
+            ראו שוברים של אחרים
           </Link>
         </div>
       </div>

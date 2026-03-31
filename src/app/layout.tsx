@@ -15,7 +15,7 @@ const heebo = Heebo({
 });
 
 export const metadata: Metadata = {
-  title: "הון כלוא",
+  title: "שובר מתנה",
   description:
     "שוברים דיגיטליים שלא מנוצלים: סיכום כמה שווים, מסחר והחלפות — וסגירת עסקאות בצ׳אט.",
 };

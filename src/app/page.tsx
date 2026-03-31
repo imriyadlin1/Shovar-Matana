@@ -1,19 +1,21 @@
 import Link from "next/link";
-import { MessageCircle, ShieldCheck, Upload, Wallet } from "lucide-react";
+import { Eye, ListChecks, MessageCircle, ShieldCheck, SlidersHorizontal } from "lucide-react";
 import { MarketAssetCard } from "@/components/market/MarketAssetCard";
 import { getListedAssetsPreview } from "@/lib/market/preview";
 
 function VaultPreview() {
   return (
     <div className="card-elevated mx-auto mt-14 max-w-md overflow-hidden border-brand/15 shadow-lg md:mt-16">
-      <div className="bg-gradient-to-br from-brand-faint/90 via-surface to-surface-muted/30 px-6 py-5">
-        <p className="text-xs font-bold uppercase tracking-[0.12em] text-brand-deep/80">הכספת שלכם</p>
-        <p className="mt-3 text-4xl font-black tabular-nums tracking-tight text-brand-deep">₪1,850</p>
-        <p className="mt-1 text-sm font-semibold text-ink-muted">ערך שכבר שילמתם ועדיין לא מומש</p>
+      <p className="px-6 pt-5 text-xs font-bold uppercase tracking-[0.12em] text-brand-deep/80">
+        תוך דקה זה נראה ככה
+      </p>
+      <div className="bg-gradient-to-br from-brand-faint/90 via-surface to-surface-muted/30 px-6 pb-5 pt-3">
+        <p className="text-4xl font-black tabular-nums tracking-tight text-brand-deep">₪1,850</p>
+        <p className="mt-1 text-sm font-semibold text-ink-muted">שווי כולל של השוברים שלכם</p>
       </div>
       <div className="flex divide-x divide-x-reverse divide-slate-100 border-t border-slate-100 text-center">
         {[
-          { n: "3", label: "שוברים בכספת" },
+          { n: "3", label: "שוברים" },
           { n: "2", label: "פעילים" },
           { n: "1", label: "מוצע למכירה" },
         ].map((s) => (
@@ -38,12 +40,13 @@ export default async function HomePage() {
         <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_85%_60%_at_50%_-18%,rgba(21,101,192,0.14),transparent_58%)]" />
         <div className="page-shell relative pb-20 pt-20 md:pb-28 md:pt-28">
           <h1 className="mx-auto max-w-2xl text-balance text-center text-4xl font-bold leading-[1.08] tracking-tight text-brand-deep md:text-5xl">
-            השוברים ששכחתם עדיין שווים כסף
+            יש לכם שוברים או זיכויים שלא השתמשתם בהם?
           </h1>
-          <p className="mx-auto mt-5 max-w-lg text-center text-lg font-semibold leading-relaxed text-ink">
-            כרטיסי מתנה, זיכויים, קודים — כסף שכבר יצא מהכיס.
-            <br />
-            <span className="text-brand-deep">תרכזו, תראו כמה שווה, תחליטו מה לעשות.</span>
+          <p className="mx-auto mt-5 max-w-xl text-center text-lg font-semibold leading-relaxed text-ink">
+            מרכזים את הכול במקום אחד — ורואים מה שווה להשתמש, למכור או להעביר הלאה.
+          </p>
+          <p className="mx-auto mt-3 max-w-md text-center text-sm font-medium text-ink-muted">
+            תוך פחות מדקה תבינו מה יש לכם ביד.
           </p>
 
           <VaultPreview />
@@ -53,10 +56,10 @@ export default async function HomePage() {
               href="/auth/signup?next=%2Fdashboard%2Fnew"
               className="btn-cta px-8 py-3.5 text-base font-bold"
             >
-              פתחו כספת — בחינם
+              בדקו מה יש לכם
             </Link>
             <Link href="/market" className="btn-secondary px-8 py-3.5 text-base font-semibold">
-              ראו מה מוצע עכשיו
+              ראו שוברים של אחרים
             </Link>
           </div>
         </div>
@@ -65,16 +68,13 @@ export default async function HomePage() {
       {/* ── What you get ── */}
       <section className="border-t border-slate-200/50 bg-surface/80 py-16 md:py-20">
         <div className="page-shell">
-          <h2 className="text-center eyebrow">מה מקבלים אחרי הרשמה</h2>
-          <p className="mx-auto mt-3 max-w-xl text-center text-2xl font-bold text-brand-deep">
-            כספת אישית, מספרים ברורים, והחלטה בידיים שלכם
-          </p>
+          <h2 className="text-center eyebrow">מה עושים פה בפועל?</h2>
           <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              { icon: Wallet, t: "סכום כולל", d: "רואים בשנייה כמה כסף תקוע בשוברים לא ממומשים." },
-              { icon: Upload, t: "כספת אישית", d: "כל שובר נרשם במקום אחד — סוג, ערך, סטטוס." },
-              { icon: ShieldCheck, t: "מכירה או החלפה", d: "בוחרים מה לפרסם. מה שלא — נשאר אצלכם." },
-              { icon: MessageCircle, t: "סגירה בצ׳אט", d: "מחיר ותנאים נקבעים ישירות עם הצד השני." },
+              { icon: Eye, t: "רואים הכול במקום אחד", d: "כל השוברים, הזיכויים וההטבות שלכם מרוכזים יחד." },
+              { icon: SlidersHorizontal, t: "מבינים מה שווה לכם", d: "כמה זה שווה ומה כדאי לעשות עם זה." },
+              { icon: ListChecks, t: "מחליטים מה לעשות", d: "להשתמש, למכור או להעביר למישהו אחר." },
+              { icon: MessageCircle, t: "מדברים ישירות", d: "צ׳אט פשוט מול מי שמציע או מחפש שובר." },
             ].map((x) => {
               const Icon = x.icon;
               return (
@@ -91,53 +91,39 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── 3 Steps ── */}
+      {/* ── How it works ── */}
       <section className="py-16 md:py-20">
         <div className="page-shell">
-          <h2 className="text-center eyebrow">איך זה עובד</h2>
-          <p className="mx-auto mt-3 max-w-lg text-center text-2xl font-bold text-brand-deep">
-            שלושה צעדים מהשכחה לפעולה
-          </p>
+          <h2 className="text-center eyebrow">איך זה עובד?</h2>
           <ol className="mt-12 grid gap-6 md:grid-cols-3">
             {[
               {
                 step: "1",
-                title: "מעלים שוברים",
-                body: "רושמים כל שובר — סוג, ערך על הנייר, מחיר מבוקש. רק אתם רואים עד שתחליטו לפרסם.",
-                icon: Upload,
+                title: "מוסיפים את השוברים שלכם",
+                body: "מכניסים שוברים, זיכויים או הטבות שיש לכם.",
               },
               {
                 step: "2",
-                title: "רואים כמה תקוע",
-                body: "סכום אחד ברור — כמה כסף כבר שילמתם ועדיין לא חזר. זה מה שמניע להחליט.",
-                icon: Wallet,
+                title: "רואים מה יש לכם",
+                body: "הכול מרוכז במקום אחד וברור לעין.",
               },
               {
                 step: "3",
-                title: "מוכרים או מחליפים",
-                body: "פרסמו הצעה. קונה מתעניין? מתקדמים ישירות בצ׳אט — מחיר ותנאים ביניכם.",
-                icon: MessageCircle,
+                title: "בוחרים מה לעשות",
+                body: "להשתמש, למכור או לדבר עם משתמשים אחרים.",
               },
-            ].map((item) => {
-              const Icon = item.icon;
-              return (
-                <li
-                  key={item.step}
-                  className="card-elevated px-7 py-7 transition duration-200 hover:-translate-y-1 hover:border-brand/20 hover:shadow-card-hover"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="flex size-9 items-center justify-center rounded-xl bg-brand text-sm font-black text-white shadow-sm">
-                      {item.step}
-                    </span>
-                    <div className="inline-flex size-10 items-center justify-center rounded-xl bg-accent-faint text-accent ring-1 ring-accent/20">
-                      <Icon className="size-5" strokeWidth={2} aria-hidden />
-                    </div>
-                  </div>
-                  <h3 className="mt-4 text-lg font-bold text-brand-deep">{item.title}</h3>
-                  <p className="mt-2 text-sm font-medium leading-relaxed text-ink-muted">{item.body}</p>
-                </li>
-              );
-            })}
+            ].map((item) => (
+              <li
+                key={item.step}
+                className="card-elevated px-7 py-7 transition duration-200 hover:-translate-y-1 hover:border-brand/20 hover:shadow-card-hover"
+              >
+                <span className="flex size-9 items-center justify-center rounded-xl bg-brand text-sm font-black text-white shadow-sm">
+                  {item.step}
+                </span>
+                <h3 className="mt-4 text-lg font-bold text-brand-deep">{item.title}</h3>
+                <p className="mt-2 text-sm font-medium leading-relaxed text-ink-muted">{item.body}</p>
+              </li>
+            ))}
           </ol>
         </div>
       </section>
@@ -147,10 +133,9 @@ export default async function HomePage() {
         <div className="page-shell">
           <div className="flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-end">
             <div>
-              <h2 className="eyebrow">שוברים פתוחים מהקהילה</h2>
-              <p className="mt-3 text-2xl font-bold text-brand-deep">ערך על הנייר מול מחיר מבוקש</p>
+              <h2 className="text-2xl font-bold text-brand-deep">שוברים ממשתמשים אחרים</h2>
               <p className="mt-2 max-w-md text-sm font-medium text-ink-muted">
-                כל שובר כאן פורסם ע&quot;י משתמש אמיתי. רוצים לסגור? רק בצ׳אט ישיר.
+                אפשר למצוא שוברים במחיר נמוך יותר מהשווי שלהם.
               </p>
             </div>
             <Link href="/market" className="btn-secondary shrink-0 font-semibold">
@@ -162,13 +147,13 @@ export default async function HomePage() {
             <div className="card-elevated mt-10 flex flex-col items-center px-8 py-14 text-center">
               <p className="text-lg font-bold text-brand-deep">עדיין אין שוברים פתוחים</p>
               <p className="mt-3 max-w-sm text-sm font-medium text-ink-muted">
-                התחילו ע&quot;י בניית כספת אישית. כשמשתמשים יפרסמו — תראו אותם כאן.
+                כשמשתמשים יפרסמו שוברים — תראו אותם כאן.
               </p>
               <Link
                 href="/auth/signup?next=%2Fdashboard%2Fnew"
                 className="btn-cta mt-8 font-bold"
               >
-                פתחו כספת
+                בדקו מה יש לכם
               </Link>
             </div>
           ) : (
@@ -188,9 +173,9 @@ export default async function HomePage() {
         <div className="page-shell">
           <div className="card-elevated flex flex-col gap-5 border-brand/10 bg-gradient-to-br from-brand-faint/50 via-surface to-accent-faint/30 px-8 py-8 shadow-md md:flex-row md:items-start md:justify-between md:px-10 md:py-10">
             {[
-              { t: "הכספת שלכם", d: "פרטי ומאורגן. מה שלא בפנים — לא נספר." },
+              { t: "הכול במקום אחד", d: "כל השוברים שלכם מרוכזים ומסודרים." },
               { t: "בלי מתווך", d: "אתם מחליטים מה לפרסם, מתי ולמי." },
-              { t: "סגירה בצ׳אט", d: "מחיר ותנאים ביניכם — לא על לוח מודעות." },
+              { t: "סגירה בצ׳אט", d: "מחיר ותנאים ביניכם — ישירות." },
             ].map((x) => (
               <div key={x.t} className="flex gap-3 md:flex-1">
                 <ShieldCheck className="mt-0.5 size-5 shrink-0 text-brand" strokeWidth={2} aria-hidden />

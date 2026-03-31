@@ -5,10 +5,9 @@ export function SiteFooter() {
     <footer className="mt-auto border-t border-slate-200/80 bg-surface/90 py-12 backdrop-blur-sm">
       <div className="page-shell grid gap-10 md:grid-cols-2 lg:grid-cols-3 lg:gap-12">
         <div>
-          <p className="text-sm font-bold text-brand-deep">הון כלוא</p>
+          <p className="text-sm font-bold text-brand-deep">שובר מתנה</p>
           <p className="mt-3 max-w-xs text-sm leading-relaxed text-ink-muted">
-            מרכז לשוברים דיגיטליים שלא מנוצלים: לראות כמה כסף „שוכב” בצד, ואז למסחר, להחלפה או לשימוש — עם
-            צ׳אט לסגירת עסקאות.
+            מרכזים שוברים וזיכויים במקום אחד — רואים מה שווה, ומחליטים מה לעשות.
           </p>
         </div>
         <div>
@@ -59,7 +58,7 @@ export function SiteFooter() {
       </div>
       <div className="page-shell mt-10 border-t border-slate-100 pt-8">
         <p className="text-center text-xs text-ink-faint">
-          © {new Date().getFullYear()} הון כלוא · השימוש באחריות המשתמשים בלבד
+          © {new Date().getFullYear()} שובר מתנה · השימוש באחריות המשתמשים בלבד
         </p>
       </div>
     </footer>
