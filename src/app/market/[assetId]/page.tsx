@@ -4,6 +4,7 @@ import { Calendar, QrCode } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { formatNis } from "@/lib/format/nis";
 import { voucherImageUrl } from "@/lib/storage/voucherImage";
+import { CopyLinkButton } from "@/components/shared/CopyLinkButton";
 import { startChatWithSeller } from "../actions";
 
 export default async function MarketAssetPage({
@@ -155,6 +156,7 @@ export default async function MarketAssetPage({
               המוכר שומר את קוד השובר / ברקוד במערכת. אחרי שמסכמים מחיר ותשלום בצ׳אט — הוא שולח את הקוד ישירות.
             </p>
           </div>
+          <CopyLinkButton path={`/market/${asset.id}`} label="שתפו את השובר" />
           <p className="border-t border-slate-100 pt-5 text-center text-xs font-medium leading-relaxed text-ink-faint">
             אל תשתפו קוד מלא או סיסמאות בציבור. ההסכם ביניכם.
           </p>

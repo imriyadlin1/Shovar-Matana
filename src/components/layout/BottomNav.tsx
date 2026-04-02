@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Building2, House, LayoutGrid, LogOut, MessageSquare } from "lucide-react";
+import { Bell, Building2, House, LayoutGrid, LogOut, MessageSquare } from "lucide-react";
 import type { NavSession } from "@/lib/auth/navSession";
 
 function Item({
@@ -32,7 +32,7 @@ function Item({
   );
 }
 
-export function BottomNav({ email, unreadConvCount }: NavSession) {
+export function BottomNav({ email, unreadConvCount, unreadNotifCount }: NavSession) {
   if (!email) return null;
 
   const chatIcon = (
@@ -41,6 +41,17 @@ export function BottomNav({ email, unreadConvCount }: NavSession) {
       {unreadConvCount > 0 && (
         <span className="absolute -right-1 -top-1 flex size-3.5 items-center justify-center rounded-full bg-red-500 text-[0.45rem] font-bold leading-none text-white ring-2 ring-white">
           {unreadConvCount > 9 ? "9+" : unreadConvCount}
+        </span>
+      )}
+    </span>
+  );
+
+  const notifIcon = (
+    <span className="relative inline-block">
+      <Bell className="size-[1.35rem]" strokeWidth={2} />
+      {unreadNotifCount > 0 && (
+        <span className="absolute -right-1 -top-1 flex size-3.5 items-center justify-center rounded-full bg-red-500 text-[0.45rem] font-bold leading-none text-white ring-2 ring-white">
+          {unreadNotifCount > 9 ? "9+" : unreadNotifCount}
         </span>
       )}
     </span>
@@ -55,16 +66,8 @@ export function BottomNav({ email, unreadConvCount }: NavSession) {
         <Item href="/" exact icon={<House className="size-[1.35rem]" strokeWidth={2} />} label="בית" />
         <Item href="/market" icon={<LayoutGrid className="size-[1.35rem]" strokeWidth={2} />} label="מסחר" />
         <Item href="/messages" icon={chatIcon} label="צ׳אט" />
-        <Item href="/dashboard" icon={<Building2 className="size-[1.35rem]" strokeWidth={2} />} label="אזור אישי" />
-        <form action="/auth/signout" method="post" className="flex min-w-0 flex-1 flex-col items-center">
-          <button
-            type="submit"
-            className="flex w-full flex-col items-center gap-0.5 rounded-xl py-1.5 text-ink-muted transition hover:text-red-700 active:scale-95"
-          >
-            <LogOut className="size-[1.35rem]" strokeWidth={2} />
-            <span className="max-w-[4rem] truncate text-[0.6rem] font-bold">יציאה</span>
-          </button>
-        </form>
+        <Item href="/notifications" icon={notifIcon} label="התראות" />
+        <Item href="/dashboard" icon={<Building2 className="size-[1.35rem]" strokeWidth={2} />} label="אישי" />
       </div>
     </nav>
   );

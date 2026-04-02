@@ -5,24 +5,42 @@ import { useRef, useState } from "react";
 import { ImagePlus, X, QrCode } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { CATEGORIES } from "@/lib/categories";
+import { voucherImageUrl } from "@/lib/storage/voucherImage";
 
-type Props = { userId: string };
+export type AssetFormData = {
+  id: string;
+  title: string;
+  nominal_value: number;
+  ask_price: number;
+  category: string | null;
+  voucher_code: string | null;
+  expiry: string | null;
+  notes: string | null;
+  image_path: string | null;
+  status: string;
+};
+
+type Props = { userId: string; asset?: AssetFormData };
 
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 
-export function AssetForm({ userId }: Props) {
+export function AssetForm({ userId, asset }: Props) {
+  const isEdit = !!asset;
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
-  const [title, setTitle] = useState("");
-  const [nominal, setNominal] = useState("");
-  const [ask, setAsk] = useState("");
-  const [category, setCategory] = useState("");
-  const [voucherCode, setVoucherCode] = useState("");
-  const [expiry, setExpiry] = useState("");
-  const [notes, setNotes] = useState("");
-  const [publish, setPublish] = useState(false);
+  const [title, setTitle] = useState(asset?.title ?? "");
+  const [nominal, setNominal] = useState(asset ? String(asset.nominal_value) : "");
+  const [ask, setAsk] = useState(asset ? String(asset.ask_price) : "");
+  const [category, setCategory] = useState(asset?.category ?? "");
+  const [voucherCode, setVoucherCode] = useState(asset?.voucher_code ?? "");
+  const [expiry, setExpiry] = useState(asset?.expiry ?? "");
+  const [notes, setNotes] = useState(asset?.notes ?? "");
+  const [publish, setPublish] = useState(asset?.status === "listed");
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(
+    asset?.image_path ? voucherImageUrl(asset.image_path) : null,
+  );
+  const [removeExistingImage, setRemoveExistingImage] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -39,13 +57,15 @@ export function AssetForm({ userId }: Props) {
     }
     setError(null);
     setImageFile(file);
+    setRemoveExistingImage(true);
     setImagePreview(URL.createObjectURL(file));
   }
 
   function removeImage() {
     setImageFile(null);
-    if (imagePreview) URL.revokeObjectURL(imagePreview);
+    if (imagePreview && imagePreview.startsWith("blob:")) URL.revokeObjectURL(imagePreview);
     setImagePreview(null);
+    setRemoveExistingImage(true);
     if (fileRef.current) fileRef.current.value = "";
   }
 
@@ -61,7 +81,7 @@ export function AssetForm({ userId }: Props) {
     try {
       const supabase = createClient();
 
-      let imagePath: string | null = null;
+      let imagePath: string | null = isEdit && !removeExistingImage ? (asset?.image_path ?? null) : null;
       if (imageFile) {
         const ext = imageFile.name.split(".").pop() ?? "jpg";
         const path = `${userId}/${crypto.randomUUID()}.${ext}`;
@@ -75,8 +95,7 @@ export function AssetForm({ userId }: Props) {
         }
       }
 
-      const { error: err } = await supabase.from("assets").insert({
-        owner_id: userId,
+      const row = {
         title: title.trim() || "ללא כותרת",
         nominal_value: nominalNum,
         ask_price: askNum,
@@ -85,14 +104,19 @@ export function AssetForm({ userId }: Props) {
         expiry: expiry || null,
         notes: notes.trim() || null,
         image_path: imagePath,
-        status: publish ? "listed" : "draft",
-        published_at: publish ? new Date().toISOString() : null,
-      });
-      if (err) {
-        setError(err.message);
-        return;
+        status: publish ? "listed" : (isEdit ? asset.status === "sold" ? "sold" : "draft" : "draft"),
+        published_at: publish ? (asset?.status === "listed" ? undefined : new Date().toISOString()) : null,
+      };
+
+      if (isEdit) {
+        const { error: err } = await supabase.from("assets").update(row).eq("id", asset.id);
+        if (err) { setError(err.message); return; }
+        router.push(`/dashboard/assets/${asset.id}`);
+      } else {
+        const { error: err } = await supabase.from("assets").insert({ owner_id: userId, ...row });
+        if (err) { setError(err.message); return; }
+        router.push("/dashboard");
       }
-      router.push("/dashboard");
       router.refresh();
     } catch {
       setError("שמירה נכשלה");
@@ -154,7 +178,6 @@ export function AssetForm({ userId }: Props) {
         </label>
       </div>
 
-      {/* Voucher code */}
       <div className="rounded-2xl border border-brand/15 bg-brand-faint/30 p-4">
         <label className="flex flex-col gap-1.5 text-sm font-medium">
           <span className="flex items-center gap-2">
@@ -198,7 +221,6 @@ export function AssetForm({ userId }: Props) {
         />
       </label>
 
-      {/* Image upload */}
       <div className="flex flex-col gap-1.5 text-sm font-medium">
         <span>תמונה של השובר <span className="font-normal text-ink-faint">(אופציונלי)</span></span>
         {imagePreview ? (
@@ -236,15 +258,17 @@ export function AssetForm({ userId }: Props) {
         />
       </div>
 
-      <label className="flex items-center gap-2.5 rounded-lg border border-slate-200 bg-surface-muted/30 px-4 py-3 text-sm font-medium">
-        <input
-          type="checkbox"
-          checked={publish}
-          onChange={(e) => setPublish(e.target.checked)}
-          className="size-4 rounded"
-        />
-        פרסמו מיד (גלוי לכולם)
-      </label>
+      {asset?.status !== "sold" && (
+        <label className="flex items-center gap-2.5 rounded-lg border border-slate-200 bg-surface-muted/30 px-4 py-3 text-sm font-medium">
+          <input
+            type="checkbox"
+            checked={publish}
+            onChange={(e) => setPublish(e.target.checked)}
+            className="size-4 rounded"
+          />
+          {isEdit ? "מוצג לאחרים (פורסם)" : "פרסמו מיד (גלוי לכולם)"}
+        </label>
+      )}
 
       {error && <p className="text-sm text-red-600">{error}</p>}
 
@@ -253,7 +277,7 @@ export function AssetForm({ userId }: Props) {
         disabled={loading}
         className="btn-cta py-3.5 text-base font-bold"
       >
-        {loading ? "שומרים…" : "הוספת שובר"}
+        {loading ? "שומרים…" : isEdit ? "שמירת שינויים" : "הוספת שובר"}
       </button>
     </form>
   );

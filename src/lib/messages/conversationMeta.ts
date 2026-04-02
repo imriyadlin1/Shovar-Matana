@@ -4,6 +4,8 @@ export type ConversationThreadMeta = {
   peerLabel: string;
   assetTitle: string | null;
   assetId: string | null;
+  /** Populated only if the current user owns the asset */
+  ownerVoucherCode: string | null;
 };
 
 export async function getConversationThreadMeta(
@@ -35,11 +37,19 @@ export async function getConversationThreadMeta(
 
   let assetTitle: string | null = null;
   let assetId: string | null = null;
+  let ownerVoucherCode: string | null = null;
   if (conv?.context_type === "asset" && conv.context_id) {
     assetId = conv.context_id;
-    const { data: a } = await supabase.from("assets").select("title").eq("id", assetId).maybeSingle();
+    const { data: a } = await supabase
+      .from("assets")
+      .select("title, voucher_code, owner_id")
+      .eq("id", assetId)
+      .maybeSingle();
     assetTitle = a?.title ?? null;
+    if (a?.owner_id === currentUserId && a?.voucher_code) {
+      ownerVoucherCode = a.voucher_code;
+    }
   }
 
-  return { peerLabel, assetTitle, assetId };
+  return { peerLabel, assetTitle, assetId, ownerVoucherCode };
 }

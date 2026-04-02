@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Building2, HelpCircle, House, LayoutGrid, MessageSquare } from "lucide-react";
+import { Bell, Building2, HelpCircle, House, LayoutGrid, MessageSquare } from "lucide-react";
 import type { NavSession } from "@/lib/auth/navSession";
 
 function NavLink({
@@ -36,7 +36,7 @@ function NavLink({
   );
 }
 
-export function HeaderChrome({ email, displayName, isAdmin, unreadConvCount }: NavSession) {
+export function HeaderChrome({ email, displayName, isAdmin, unreadConvCount, unreadNotifCount }: NavSession) {
   const userLabel = displayName || email?.split("@")[0] || email;
 
   return (
@@ -122,13 +122,27 @@ export function HeaderChrome({ email, displayName, isAdmin, unreadConvCount }: N
                   ניהול מערכת
                 </Link>
               )}
+              <NavLink href="/notifications">
+                <>
+                  <span className="relative">
+                    <Bell className="size-3.5 opacity-70" aria-hidden />
+                    {unreadNotifCount > 0 && (
+                      <span className="absolute -right-1.5 -top-1.5 flex size-3.5 items-center justify-center rounded-full bg-red-500 text-[0.5rem] font-bold leading-none text-white ring-2 ring-white">
+                        {unreadNotifCount > 9 ? "9+" : unreadNotifCount}
+                      </span>
+                    )}
+                  </span>
+                  התראות
+                </>
+              </NavLink>
               <span className="mx-1 hidden h-5 w-px bg-slate-200 lg:inline" aria-hidden />
-              <span
-                className="hidden max-w-[9.5rem] truncate text-xs font-medium text-ink-faint lg:inline"
+              <Link
+                href="/profile"
+                className="hidden max-w-[9.5rem] truncate text-xs font-medium text-ink-faint underline decoration-transparent underline-offset-4 transition hover:text-brand hover:decoration-brand/40 lg:inline"
                 title={email ?? ""}
               >
                 {userLabel}
-              </span>
+              </Link>
               <form action="/auth/signout" method="post" className="inline">
                 <button type="submit" className="btn-ghost text-xs text-ink-muted lg:text-sm">
                   התנתקות

@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { Calendar, Copy, Eye, EyeOff, QrCode, StickyNote, Tag } from "lucide-react";
+import { Calendar, Eye, EyeOff, Pencil, QrCode, Share2, StickyNote, Tag } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { formatNis } from "@/lib/format/nis";
 import { voucherImageUrl } from "@/lib/storage/voucherImage";
 import { AssetActions } from "@/components/dashboard/AssetActions";
+import { CopyLinkButton } from "@/components/shared/CopyLinkButton";
 
 const STATUS_LABEL: Record<string, string> = {
   draft: "רק אצלכם",
@@ -153,7 +154,19 @@ export default async function AssetDetailPage({ params }: Props) {
       </div>
 
       {/* Actions */}
-      <div className="mt-6">
+      <div className="mt-6 flex flex-wrap items-center gap-3">
+        <Link
+          href={`/dashboard/assets/${asset.id}/edit`}
+          className="flex items-center gap-2 rounded-2xl border border-brand/20 bg-brand-faint/40 px-5 py-3 text-sm font-bold text-brand-deep transition hover:bg-brand hover:text-white"
+        >
+          <Pencil className="size-4" strokeWidth={2} />
+          עריכת שובר
+        </Link>
+        {asset.status === "listed" && (
+          <CopyLinkButton path={`/market/${asset.id}`} />
+        )}
+      </div>
+      <div className="mt-3">
         <AssetActions assetId={asset.id} currentStatus={asset.status} />
       </div>
     </main>

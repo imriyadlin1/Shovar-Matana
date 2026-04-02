@@ -5,10 +5,11 @@ export type NavSession = {
   displayName: string | null;
   isAdmin: boolean;
   unreadConvCount: number;
+  unreadNotifCount: number;
 };
 
 export async function getNavSession(): Promise<NavSession> {
-  const empty: NavSession = { email: null, displayName: null, isAdmin: false, unreadConvCount: 0 };
+  const empty: NavSession = { email: null, displayName: null, isAdmin: false, unreadConvCount: 0, unreadNotifCount: 0 };
   try {
     const supabase = await createClient();
     const {
@@ -22,13 +23,17 @@ export async function getNavSession(): Promise<NavSession> {
       .eq("id", user.id)
       .maybeSingle();
 
-    const unreadConvCount = await countUnreadConversations(supabase, user.id);
+    const [unreadConvCount, unreadNotifCount] = await Promise.all([
+      countUnreadConversations(supabase, user.id),
+      countUnreadNotifications(supabase, user.id),
+    ]);
 
     return {
       email: user.email ?? null,
       displayName: profile?.full_name?.trim() || null,
       isAdmin: profile?.role === "admin",
       unreadConvCount,
+      unreadNotifCount,
     };
   } catch {
     return empty;
@@ -70,6 +75,22 @@ async function countUnreadConversations(
       }
     }
     return count;
+  } catch {
+    return 0;
+  }
+}
+
+async function countUnreadNotifications(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  userId: string,
+): Promise<number> {
+  try {
+    const { count } = await supabase
+      .from("notifications")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId)
+      .eq("is_read", false);
+    return count ?? 0;
   } catch {
     return 0;
   }

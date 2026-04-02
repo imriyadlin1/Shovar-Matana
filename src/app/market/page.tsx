@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { MarketAssetCard } from "@/components/market/MarketAssetCard";
 import type { MarketAssetCardData } from "@/components/market/MarketAssetCard";
 import { CategoryFilter } from "@/components/market/CategoryFilter";
+import { MarketSearch } from "@/components/market/MarketSearch";
 
 function chatErrorLabel(code: string, detail?: string) {
   const labels: Record<string, string> = {
@@ -20,12 +21,13 @@ function chatErrorLabel(code: string, detail?: string) {
 export default async function MarketPage({
   searchParams,
 }: {
-  searchParams: Promise<{ chatError?: string; detail?: string; category?: string }>;
+  searchParams: Promise<{ chatError?: string; detail?: string; category?: string; q?: string }>;
 }) {
   const sp = await searchParams;
   const chatError = sp.chatError;
   const detail = sp.detail;
   const categoryFilter = sp.category ?? "";
+  const searchQuery = sp.q?.trim() ?? "";
   let assets: MarketAssetCardData[] | null = null;
   let errMsg: string | null = null;
 
@@ -40,6 +42,9 @@ export default async function MarketPage({
     if (categoryFilter) {
       query = query.eq("category", categoryFilter);
     }
+    if (searchQuery) {
+      query = query.ilike("title", `%${searchQuery}%`);
+    }
 
     const { data, error } = await query;
 
@@ -49,16 +54,15 @@ export default async function MarketPage({
     errMsg = e instanceof Error ? e.message : "שגיית הגדרות";
   }
 
+  const hasFilters = !!categoryFilter || !!searchQuery;
+
   return (
     <main className="page-shell py-14 pb-24 md:py-16">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="max-w-2xl">
-          <h1 className="page-hero-title">שוברים ממשתמשים אחרים</h1>
+          <h1 className="page-hero-title">שוברים דיגיטליים למכירה</h1>
           <p className="mt-4 text-base font-medium leading-relaxed text-ink-muted">
             אפשר למצוא שוברים במחיר נמוך יותר מהשווי שלהם.
-          </p>
-          <p className="mt-3 text-xs font-semibold text-ink-faint">
-            תמיד בדקו את הפרטים לפני סגירת עסקה.
           </p>
         </div>
         <Link href="/dashboard/new" className="btn-cta flex shrink-0 items-center gap-2 px-5 py-3 font-bold">
@@ -67,7 +71,10 @@ export default async function MarketPage({
         </Link>
       </header>
 
-      <div className="mt-8">
+      <div className="mt-8 flex flex-col gap-4">
+        <Suspense>
+          <MarketSearch />
+        </Suspense>
         <Suspense>
           <CategoryFilter />
         </Suspense>
@@ -90,20 +97,21 @@ export default async function MarketPage({
       {!errMsg && !assets?.length && (
         <div className="card-elevated mt-10 flex flex-col items-center px-8 py-14 text-center">
           <h2 className="section-title">
-            {categoryFilter ? `אין שוברים בקטגוריה "${categoryFilter}"` : "אין עדיין שוברים פתוחים"}
+            {searchQuery
+              ? `לא נמצאו שוברים עבור "${searchQuery}"`
+              : categoryFilter
+                ? `אין שוברים בקטגוריה "${categoryFilter}"`
+                : "אין עדיין שוברים פתוחים"}
           </h2>
           <p className="mt-3 max-w-md text-sm font-medium text-ink-muted">
-            {categoryFilter
-              ? "נסו קטגוריה אחרת או חזרו מאוחר יותר."
+            {hasFilters
+              ? "נסו חיפוש אחר או קטגוריה אחרת."
               : "עדיין לא פורסמו שוברים. הוסיפו שוברים משלכם — או חזרו מאוחר יותר."}
           </p>
-          {!categoryFilter && (
+          {!hasFilters && (
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/dashboard" className="btn-cta justify-center font-bold">
-                בדקו מה יש לכם
-              </Link>
-              <Link href="/dashboard" className="btn-secondary justify-center font-semibold">
-                יש לי חשבון — לדשבורד
+              <Link href="/dashboard/new" className="btn-cta justify-center font-bold">
+                הוסיפו שובר דיגיטלי
               </Link>
             </div>
           )}

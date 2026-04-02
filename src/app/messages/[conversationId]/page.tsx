@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ConversationChat } from "@/components/chat/ConversationChat";
 import { PaymentMethodPicker } from "@/components/chat/PaymentMethodPicker";
+import { SendVoucherCode } from "@/components/chat/SendVoucherCode";
 import { getConversationThreadMeta } from "@/lib/messages/conversationMeta";
 import { markConversationRead } from "@/lib/messages/markRead";
 import { createClient } from "@/lib/supabase/server";
@@ -59,8 +60,14 @@ export default async function ConversationPage({
             </Link>
           </p>
         )}
-        <div className="mt-5 border-t border-slate-100 pt-4">
+        <div className="mt-5 flex flex-col gap-4 border-t border-slate-100 pt-4">
           <PaymentMethodPicker conversationId={conversationId} />
+          {meta.ownerVoucherCode && (
+            <SendVoucherCode
+              conversationId={conversationId}
+              voucherCode={meta.ownerVoucherCode}
+            />
+          )}
         </div>
       </header>
 

@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2, Mail } from "lucide-react";
 import { Suspense, useEffect, useState } from "react";
 import { AuthToast, type AuthToastVariant } from "@/components/auth/AuthToast";
+import { GoogleLoginButton } from "@/components/auth/GoogleLoginButton";
 import { safeNextPath } from "@/lib/auth/safeNext";
 import { isAuthRateLimitError, signupErrorToHebrew } from "@/lib/auth/auth-errors";
 import { setPendingSignup } from "@/lib/auth/pendingSignupStorage";
@@ -125,7 +126,15 @@ function SignupForm() {
         <p className="mt-3 text-sm leading-relaxed text-ink-muted">
           ריכוז כל השוברים והזיכויים שלכם במקום אחד — לנהל, להחליף או למכור.
         </p>
-        <form onSubmit={onSubmit} className="mt-8 flex flex-col gap-5" aria-busy={loading}>
+        <div className="mt-8">
+          <GoogleLoginButton next={next} />
+        </div>
+        <div className="relative my-6 flex items-center">
+          <div className="flex-1 border-t border-slate-200" />
+          <span className="px-3 text-xs font-medium text-ink-faint">או עם אימייל</span>
+          <div className="flex-1 border-t border-slate-200" />
+        </div>
+        <form onSubmit={onSubmit} className="flex flex-col gap-5" aria-busy={loading}>
           <label className="label-form">
             שם מלא
             <input
