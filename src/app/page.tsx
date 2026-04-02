@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ShieldCheck, Gift, Coffee, Plane, ShoppingBag, Eye, EyeOff } from "lucide-react";
+import { ShieldCheck, Gift, Coffee, Plane, ShoppingBag, Eye, EyeOff, QrCode } from "lucide-react";
 import { MarketAssetCard } from "@/components/market/MarketAssetCard";
 import { getListedAssetsPreview } from "@/lib/market/preview";
 
@@ -17,11 +17,11 @@ function VaultPreview() {
         <div className="bg-gradient-to-l from-brand via-brand-light to-emerald-400 px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-[0.65rem] font-bold uppercase tracking-[0.14em] text-white/80">האזור האישי שלכם</p>
+              <p className="text-[0.65rem] font-bold uppercase tracking-[0.14em] text-white/80">השוברים הדיגיטליים שלכם</p>
               <p className="mt-1 text-3xl font-black tabular-nums tracking-tight text-white">₪1,850</p>
             </div>
             <div className="flex size-12 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm">
-              <Gift className="size-6 text-white" strokeWidth={1.5} />
+              <QrCode className="size-6 text-white" strokeWidth={1.5} />
             </div>
           </div>
         </div>
@@ -80,13 +80,13 @@ export default async function HomePage() {
         <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_60%_50%_at_100%_100%,rgba(16,185,129,0.08),transparent_50%)]" />
         <div className="page-shell relative pb-20 pt-20 md:pb-28 md:pt-28">
           <h1 className="mx-auto max-w-2xl text-balance text-center text-4xl font-bold leading-[1.08] tracking-tight text-brand-deep md:text-5xl">
-            יש לכם שוברים או זיכויים שלא השתמשתם בהם?
+            שוברים דיגיטליים שוכבים לכם בצד?
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-center text-lg font-semibold leading-relaxed text-ink">
-            מרכזים את הכול במקום אחד — ורואים מה שווה להשתמש, למכור או להעביר הלאה.
+            קוד שובר, ברקוד, מספר מתנה — מרכזים הכול במקום אחד, רואים מה שווה ומוכרים ישירות.
           </p>
           <p className="mx-auto mt-3 max-w-md text-center text-sm font-medium text-ink-muted">
-            תוך פחות מדקה תבינו מה יש לכם ביד.
+            תוך פחות מדקה תבינו מה יש לכם ביד — ואיך להפוך את זה לכסף.
           </p>
 
           <VaultPreview />
@@ -96,10 +96,10 @@ export default async function HomePage() {
               href="/dashboard"
               className="btn-cta px-8 py-3.5 text-base font-bold"
             >
-              בדקו מה יש לכם
+              הוסיפו שובר דיגיטלי
             </Link>
             <Link href="/market" className="btn-secondary px-8 py-3.5 text-base font-semibold">
-              ראו שוברים של אחרים
+              שוברים למכירה עכשיו
             </Link>
           </div>
         </div>
@@ -113,20 +113,20 @@ export default async function HomePage() {
             {[
               {
                 step: "1",
-                title: "מוסיפים שוברים",
-                body: "שובר מתנה, זיכוי, הטבה — מכניסים את השווי ובוחרים קטגוריה.",
+                title: "מוסיפים שובר דיגיטלי",
+                body: "קוד שובר, ברקוד או מספר מתנה — שומרים את הקוד, בוחרים קטגוריה ומגדירים מחיר.",
                 gradient: "from-brand to-blue-500",
               },
               {
                 step: "2",
                 title: "רואים את התמונה",
-                body: "כמה שווה הכול, מה בשימוש ומה לא. הכול במסך אחד.",
+                body: "כמה שווה הכול, מה בתוקף ומה לא. כל השוברים הדיגיטליים במסך אחד.",
                 gradient: "from-emerald-500 to-teal-500",
               },
               {
                 step: "3",
-                title: "משתמשים או מוכרים",
-                body: "מפרסמים לאחרים, ומי שמתעניין פונה ישירות בצ׳אט.",
+                title: "מוכרים בצ׳אט",
+                body: "מפרסמים, מי שרוצה פותח צ׳אט — ואחרי שמסכמים מחיר, שולחים את הקוד ישירות.",
                 gradient: "from-blue-500 to-emerald-500",
               },
             ].map((item) => (
@@ -150,9 +150,9 @@ export default async function HomePage() {
         <div className="page-shell">
           <div className="flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-end">
             <div>
-              <h2 className="text-2xl font-bold text-brand-deep">שוברים ממשתמשים אחרים</h2>
+              <h2 className="text-2xl font-bold text-brand-deep">שוברים דיגיטליים למכירה</h2>
               <p className="mt-2 max-w-md text-sm font-medium text-ink-muted">
-                אפשר למצוא שוברים במחיר נמוך יותר מהשווי שלהם.
+                קוד שובר שלא השתמשתם בו? מישהו אחר ישמח. מצאו שוברים במחיר נמוך מהשווי.
               </p>
             </div>
             <Link href="/market" className="btn-secondary shrink-0 font-semibold">
@@ -190,9 +190,9 @@ export default async function HomePage() {
         <div className="page-shell">
           <div className="card-elevated flex flex-col gap-5 border-emerald-200/40 bg-gradient-to-br from-emerald-50/60 via-white to-blue-50/50 px-8 py-8 shadow-md md:flex-row md:items-start md:justify-between md:px-10 md:py-10">
             {[
-              { t: "פרטיות מלאה", d: "השוברים שלכם נראים רק לכם — עד שתחליטו לפרסם.", color: "text-emerald-600" },
-              { t: "בלי מתווך", d: "אתם מחליטים מה לפרסם, מתי ולמי.", color: "text-brand" },
-              { t: "סגירה בצ׳אט", d: "מחיר ותנאים ביניכם — ישירות.", color: "text-teal-600" },
+              { t: "הקוד רק אצלכם", d: "קוד השובר נשמר בפרטיות מלאה — ונשלח רק כשאתם מחליטים.", color: "text-emerald-600" },
+              { t: "בלי מתווך", d: "אתם מחליטים מה לפרסם, מתי ומחיר — ישירות.", color: "text-brand" },
+              { t: "העברה דיגיטלית", d: "מסכמים בצ׳אט, שולחים את הקוד — ונסגר.", color: "text-teal-600" },
             ].map((x) => (
               <div key={x.t} className="flex gap-3 md:flex-1">
                 <ShieldCheck className={`mt-0.5 size-5 shrink-0 ${x.color}`} strokeWidth={2} aria-hidden />

@@ -6,7 +6,7 @@ export async function getListedAssetsPreview(limit = 6): Promise<MarketAssetCard
     const supabase = await createClient();
     const { data, error } = await supabase
       .from("assets")
-      .select("id, title, nominal_value, ask_price, category")
+      .select("id, title, nominal_value, ask_price, category, image_path, expiry")
       .eq("status", "listed")
       .order("published_at", { ascending: false })
       .limit(limit);

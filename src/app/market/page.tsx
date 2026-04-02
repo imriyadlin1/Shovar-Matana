@@ -33,7 +33,7 @@ export default async function MarketPage({
     const supabase = await createClient();
     let query = supabase
       .from("assets")
-      .select("id, title, nominal_value, ask_price, category")
+      .select("id, title, nominal_value, ask_price, category, image_path, expiry")
       .eq("status", "listed")
       .order("published_at", { ascending: false });
 

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Calendar } from "lucide-react";
 import { formatNis } from "@/lib/format/nis";
 import { MarketAssetThumb } from "@/components/market/MarketAssetThumb";
 
@@ -9,6 +9,8 @@ export type MarketAssetCardData = {
   nominal_value: number;
   ask_price: number;
   category: string | null;
+  image_path?: string | null;
+  expiry?: string | null;
 };
 
 export function MarketAssetCard({ asset }: { asset: MarketAssetCardData }) {
@@ -17,13 +19,17 @@ export function MarketAssetCard({ asset }: { asset: MarketAssetCardData }) {
   const hasDeal = nominal > 0 && ask < nominal;
   const saved = hasDeal ? Math.round(nominal - ask) : 0;
   const discountPct = hasDeal ? Math.round(((nominal - ask) / nominal) * 100) : 0;
+  const isExpired = asset.expiry && new Date(asset.expiry) < new Date();
+  const expiryLabel = asset.expiry
+    ? new Date(asset.expiry).toLocaleDateString("he-IL", { day: "numeric", month: "short" })
+    : null;
 
   return (
     <Link
       href={`/market/${asset.id}`}
       className="card-elevated group flex h-full scale-100 flex-col overflow-hidden transition duration-300 hover:-translate-y-1 hover:scale-[1.02] hover:border-money/30 hover:shadow-card-hover"
     >
-      <MarketAssetThumb title={asset.title} />
+      <MarketAssetThumb title={asset.title} imagePath={asset.image_path} />
       <div className="flex flex-1 flex-col p-5">
         <div className="flex flex-wrap items-center gap-2">
           {asset.category && (
@@ -34,6 +40,14 @@ export function MarketAssetCard({ asset }: { asset: MarketAssetCardData }) {
           {hasDeal && (
             <span className="rounded-full bg-money/15 px-2.5 py-0.5 text-[0.65rem] font-bold text-money-dark ring-1 ring-money/25">
               חסכון {discountPct}%
+            </span>
+          )}
+          {expiryLabel && (
+            <span className={`flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[0.65rem] font-semibold ${
+              isExpired ? "bg-red-50 text-red-700 ring-1 ring-red-200" : "bg-slate-100 text-ink-muted"
+            }`}>
+              <Calendar className="size-3" strokeWidth={2} />
+              {isExpired ? "פג תוקף" : `עד ${expiryLabel}`}
             </span>
           )}
         </div>

@@ -2,13 +2,13 @@
 
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
-import { ImagePlus, X } from "lucide-react";
+import { ImagePlus, X, QrCode } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { CATEGORIES } from "@/lib/categories";
 
 type Props = { userId: string };
 
-const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5 MB
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 
 export function AssetForm({ userId }: Props) {
   const router = useRouter();
@@ -17,6 +17,9 @@ export function AssetForm({ userId }: Props) {
   const [nominal, setNominal] = useState("");
   const [ask, setAsk] = useState("");
   const [category, setCategory] = useState("");
+  const [voucherCode, setVoucherCode] = useState("");
+  const [expiry, setExpiry] = useState("");
+  const [notes, setNotes] = useState("");
   const [publish, setPublish] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -78,6 +81,9 @@ export function AssetForm({ userId }: Props) {
         nominal_value: nominalNum,
         ask_price: askNum,
         category: category || null,
+        voucher_code: voucherCode.trim() || null,
+        expiry: expiry || null,
+        notes: notes.trim() || null,
         image_path: imagePath,
         status: publish ? "listed" : "draft",
         published_at: publish ? new Date().toISOString() : null,
@@ -102,17 +108,18 @@ export function AssetForm({ userId }: Props) {
         <input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="rounded-lg border px-3 py-2.5"
+          className="input-field"
           required
           placeholder="למשל: שובר לארוחה במסעדה"
         />
       </label>
+
       <label className="flex flex-col gap-1.5 text-sm font-medium">
         קטגוריה
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          className="rounded-lg border bg-white px-3 py-2.5 text-sm"
+          className="input-field"
           required
         >
           <option value="">בחרו קטגוריה</option>
@@ -121,6 +128,7 @@ export function AssetForm({ userId }: Props) {
           ))}
         </select>
       </label>
+
       <div className="grid gap-5 sm:grid-cols-2">
         <label className="flex flex-col gap-1.5 text-sm font-medium">
           שווי השובר · ₪
@@ -128,7 +136,7 @@ export function AssetForm({ userId }: Props) {
             type="number"
             value={nominal}
             onChange={(e) => setNominal(e.target.value)}
-            className="rounded-lg border px-3 py-2.5 font-semibold tabular-nums"
+            className="input-field font-semibold tabular-nums"
             placeholder="200"
             min={0}
           />
@@ -139,12 +147,56 @@ export function AssetForm({ userId }: Props) {
             type="number"
             value={ask}
             onChange={(e) => setAsk(e.target.value)}
-            className="rounded-lg border px-3 py-2.5 font-semibold tabular-nums"
+            className="input-field font-semibold tabular-nums"
             placeholder="ריק = 85% מהשווי"
             min={0}
           />
         </label>
       </div>
+
+      {/* Voucher code */}
+      <div className="rounded-2xl border border-brand/15 bg-brand-faint/30 p-4">
+        <label className="flex flex-col gap-1.5 text-sm font-medium">
+          <span className="flex items-center gap-2">
+            <QrCode className="size-4 text-brand" strokeWidth={2} />
+            קוד השובר / מספר שובר
+            <span className="font-normal text-ink-faint">(נראה רק לכם)</span>
+          </span>
+          <input
+            value={voucherCode}
+            onChange={(e) => setVoucherCode(e.target.value)}
+            className="input-field font-mono tracking-wider"
+            placeholder="למשל: SHV-4829-XLPR או 7290012345678"
+            dir="ltr"
+          />
+        </label>
+        <p className="mt-2 text-xs leading-relaxed text-ink-faint">
+          ברקוד, קוד דיגיטלי או מספר שובר — שמרו אותו כאן ותשתפו עם הקונה בצ׳אט כשתסגרו עסקה.
+        </p>
+      </div>
+
+      <div className="grid gap-5 sm:grid-cols-2">
+        <label className="flex flex-col gap-1.5 text-sm font-medium">
+          תוקף השובר
+          <input
+            type="date"
+            value={expiry}
+            onChange={(e) => setExpiry(e.target.value)}
+            className="input-field"
+          />
+        </label>
+      </div>
+
+      <label className="flex flex-col gap-1.5 text-sm font-medium">
+        הערות
+        <textarea
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          className="input-field min-h-[5rem] resize-y"
+          placeholder="תנאים מיוחדים, הגבלות, פרטים שכדאי לדעת…"
+          rows={3}
+        />
+      </label>
 
       {/* Image upload */}
       <div className="flex flex-col gap-1.5 text-sm font-medium">
@@ -193,11 +245,13 @@ export function AssetForm({ userId }: Props) {
         />
         פרסמו מיד (גלוי לכולם)
       </label>
+
       {error && <p className="text-sm text-red-600">{error}</p>}
+
       <button
         type="submit"
         disabled={loading}
-        className="rounded-xl bg-brand py-3 text-base font-bold text-white shadow-md transition hover:bg-brand-deep disabled:opacity-60"
+        className="btn-cta py-3.5 text-base font-bold"
       >
         {loading ? "שומרים…" : "הוספת שובר"}
       </button>

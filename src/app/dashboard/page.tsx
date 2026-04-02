@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Eye, EyeOff, Package, Plus, ShoppingBag } from "lucide-react";
+import { Calendar, Eye, EyeOff, Package, Plus, QrCode, ShoppingBag } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { formatNis } from "@/lib/format/nis";
 
@@ -23,6 +23,8 @@ type AssetRow = {
   ask_price: number | string;
   status: string;
   category: string | null;
+  voucher_code: string | null;
+  expiry: string | null;
   created_at: string;
   sold_at: string | null;
 };
@@ -199,6 +201,7 @@ export default async function DashboardPage({
 function AssetListItem({ asset }: { asset: AssetRow }) {
   const nominal = num(asset.nominal_value);
   const ask = num(asset.ask_price);
+  const isExpired = asset.expiry && new Date(asset.expiry) < new Date();
 
   return (
     <li className="card-elevated flex flex-wrap items-center justify-between gap-4 px-5 py-4 transition duration-200 hover:border-brand/15 hover:shadow-card-hover md:px-6">
@@ -213,6 +216,12 @@ function AssetListItem({ asset }: { asset: AssetRow }) {
           <span className={`rounded-full px-2.5 py-0.5 text-[0.65rem] font-bold ${STATUS_COLOR[asset.status] ?? "bg-slate-100 text-ink-muted"}`}>
             {STATUS_LABEL[asset.status] ?? asset.status}
           </span>
+          {asset.voucher_code && (
+            <span className="flex items-center gap-1 rounded-full bg-brand-faint/60 px-2 py-0.5 text-[0.6rem] font-semibold text-brand">
+              <QrCode className="size-2.5" strokeWidth={2.5} />
+              קוד שמור
+            </span>
+          )}
         </div>
         <div className="mt-2 flex flex-wrap items-baseline gap-x-4 gap-y-1 text-sm">
           <span className="font-bold tabular-nums text-money">
@@ -221,6 +230,14 @@ function AssetListItem({ asset }: { asset: AssetRow }) {
           <span className="font-semibold tabular-nums text-brand-deep">
             {formatNis(Math.round(ask))} ₪ מבוקש
           </span>
+          {asset.expiry && (
+            <span className={`flex items-center gap-1 text-xs font-medium ${isExpired ? "text-red-600" : "text-ink-faint"}`}>
+              <Calendar className="size-3" strokeWidth={2} />
+              {isExpired
+                ? "פג תוקף"
+                : `עד ${new Date(asset.expiry).toLocaleDateString("he-IL", { day: "numeric", month: "short" })}`}
+            </span>
+          )}
         </div>
       </div>
       <Link

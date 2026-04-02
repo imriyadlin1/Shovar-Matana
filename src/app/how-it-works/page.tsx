@@ -1,30 +1,30 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ListChecks, Plus, Eye } from "lucide-react";
+import { Plus, Eye, MessageCircle, QrCode } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "איך זה עובד · שובר מתנה",
-  description: "שלושה צעדים: מוסיפים שוברים, רואים מה יש, בוחרים מה לעשות.",
+  description: "שלושה צעדים: מוסיפים שובר דיגיטלי עם הקוד, רואים מה יש, מוכרים בצ׳אט.",
 };
 
 const steps = [
   {
     n: 1,
-    title: "מוסיפים את השוברים שלכם",
-    body: "מכניסים שוברים, זיכויים או הטבות שיש לכם.",
-    icon: Plus,
+    title: "שומרים את השובר הדיגיטלי",
+    body: "מכניסים את קוד השובר, ברקוד או מספר מתנה — בוחרים קטגוריה, שווי ומחיר. הקוד נשמר בפרטיות.",
+    icon: QrCode,
   },
   {
     n: 2,
     title: "רואים מה יש לכם",
-    body: "הכול מרוכז במקום אחד וברור לעין.",
+    body: "כל השוברים הדיגיטליים מרוכזים במסך אחד — שווי, תוקף וסטטוס.",
     icon: Eye,
   },
   {
     n: 3,
-    title: "בוחרים מה לעשות",
-    body: "להשתמש, למכור או לדבר עם משתמשים אחרים.",
-    icon: ListChecks,
+    title: "מוכרים ישירות בצ׳אט",
+    body: "מפרסמים, מי שרוצה פותח צ׳אט — מסכמים מחיר ושולחים את הקוד. פשוט.",
+    icon: MessageCircle,
   },
 ];
 
@@ -34,7 +34,7 @@ export default function HowItWorksPage() {
       <div className="mx-auto max-w-5xl">
         <p className="eyebrow text-center">איך זה עובד?</p>
         <h1 className="mx-auto mt-3 max-w-xl text-balance text-center page-hero-title">
-          שלושה צעדים פשוטים
+          שלושה צעדים — מקוד שובר לכסף
         </h1>
 
         <ol className="mt-14 grid gap-8 lg:grid-cols-3 lg:gap-6">
@@ -59,11 +59,11 @@ export default function HowItWorksPage() {
         </ol>
 
         <div className="mt-14 flex flex-wrap justify-center gap-4">
-          <Link href="/dashboard" className="btn-cta px-8">
-            בדקו מה יש לכם
+          <Link href="/dashboard/new" className="btn-cta px-8">
+            הוסיפו שובר דיגיטלי
           </Link>
           <Link href="/market" className="btn-secondary px-8">
-            ראו שוברים של אחרים
+            שוברים למכירה עכשיו
           </Link>
         </div>
       </div>

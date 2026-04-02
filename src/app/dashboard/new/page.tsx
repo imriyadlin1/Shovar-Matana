@@ -11,9 +11,9 @@ export default async function NewAssetPage() {
 
   return (
     <main className="mx-auto max-w-xl px-4 py-12">
-      <h1 className="text-2xl font-bold text-brand-deep">הוספת שובר</h1>
+      <h1 className="text-2xl font-bold text-brand-deep">הוספת שובר דיגיטלי</h1>
       <p className="mt-2 text-sm font-medium text-slate-600">
-        מוסיפים שובר או זיכוי — ורואים אותו מיד ברשימה שלכם.
+        קוד שובר, ברקוד או מספר מתנה — שמרו את הכול במקום אחד ומכרו ישירות.
       </p>
       <AssetForm userId={user.id} />
     </main>

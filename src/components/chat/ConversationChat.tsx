@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/client";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { useEffect, useRef, useState } from "react";
+import { ChatSuggestions } from "./ChatSuggestions";
 
 export type ChatMessageRow = {
   id: string;
@@ -49,7 +50,7 @@ function formatMessageTime(iso: string) {
   return d.toLocaleString("he-IL", { dateStyle: "short", timeStyle: "short" });
 }
 
-function DemoConversationPreview() {
+function DemoConversationPreview({ onTap }: { onTap: (text: string) => void }) {
   const rows = [
     { side: "them" as const, text: "היי — השובר עדיין בתוקף? ראיתי שווי של 450 ₪." },
     { side: "me" as const, text: "כן. אפשר לסגור על 380 היום אם מעבירים מיד." },
@@ -58,23 +59,25 @@ function DemoConversationPreview() {
   return (
     <div className="mb-4 space-y-3 rounded-2xl border border-dashed border-slate-300/90 bg-surface/90 px-3 py-4 shadow-sm" dir="rtl">
       <p className="text-center text-[0.65rem] font-bold uppercase tracking-[0.14em] text-ink-faint">
-        דוגמה לשיחת סגירה · לא נשלחה
+        דוגמה לשיחת סגירה · לחצו על הודעה כדי להשתמש בה
       </p>
-      <div className="space-y-2.5" aria-hidden>
+      <div className="space-y-2.5">
         {rows.map((r, i) => (
           <div
             key={i}
             className={`flex w-full ${r.side === "me" ? "justify-end" : "justify-start"}`}
           >
-            <div
-              className={`max-w-[min(88%,28rem)] rounded-2xl px-3.5 py-2.5 text-[0.8125rem] leading-snug opacity-[0.92] ${
+            <button
+              type="button"
+              onClick={() => onTap(r.text)}
+              className={`max-w-[min(88%,28rem)] cursor-pointer rounded-2xl px-3.5 py-2.5 text-start text-[0.8125rem] leading-snug opacity-[0.92] transition hover:opacity-100 hover:shadow-md ${
                 r.side === "me"
-                  ? "rounded-br-md bg-brand/88 text-white ring-1 ring-brand/15"
-                  : "rounded-bl-md border border-slate-200/90 bg-surface-muted text-ink"
+                  ? "rounded-br-md bg-brand/88 text-white ring-1 ring-brand/15 hover:bg-brand"
+                  : "rounded-bl-md border border-slate-200/90 bg-surface-muted text-ink hover:border-brand/30"
               }`}
             >
               {r.text}
-            </div>
+            </button>
           </div>
         ))}
       </div>
@@ -88,12 +91,18 @@ export function ConversationChat({ conversationId, currentUserId, initialMessage
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const scrollToBottom = () => {
     requestAnimationFrame(() => {
       bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
     });
   };
+
+  function insertText(text: string) {
+    setBody(text);
+    textareaRef.current?.focus();
+  }
 
   useEffect(() => {
     const supabase = createClient();
@@ -170,7 +179,7 @@ export function ConversationChat({ conversationId, currentUserId, initialMessage
         dir="ltr"
         className="flex max-h-[min(58vh,540px)] min-h-[220px] flex-col gap-3 overflow-y-auto rounded-3xl border border-slate-200/80 bg-surface-muted/50 p-4 shadow-inner md:p-5"
       >
-        {showDemo && <DemoConversationPreview />}
+        {showDemo && <DemoConversationPreview onTap={insertText} />}
         {showDemo && (
           <div
             dir="rtl"
@@ -178,7 +187,7 @@ export function ConversationChat({ conversationId, currentUserId, initialMessage
           >
             <p className="text-sm font-bold text-brand-deep">עכשיו תורכם</p>
             <p className="max-w-sm text-xs leading-relaxed text-ink-muted">
-              שלחו הודעה — השיחה האמיתית מחליפה את הדוגמה למעלה.
+              לחצו על דוגמה למעלה או בחרו משפט מוכן למטה — או כתבו משהו משלכם.
             </p>
           </div>
         )}
@@ -224,7 +233,11 @@ export function ConversationChat({ conversationId, currentUserId, initialMessage
           <span className="eyebrow text-ink-muted">שלחו — סוגרים פה</span>
           <span className="sr-only">גוף ההודעה</span>
         </label>
+
+        <ChatSuggestions onSelect={insertText} />
+
         <textarea
+          ref={textareaRef}
           id="chat-body"
           value={body}
           onChange={(e) => setBody(e.target.value)}
@@ -233,7 +246,7 @@ export function ConversationChat({ conversationId, currentUserId, initialMessage
           disabled={sending}
           dir="rtl"
           className="input-field min-h-[6rem] resize-y disabled:opacity-55"
-          placeholder="380 ₪ נעול לשעה 18:00 · הקוד מיד אחרי אישור"
+          placeholder="כתבו הודעה או לחצו על משפט מוכן למעלה…"
         />
         {error && (
           <p className="alert-danger py-3 text-sm" role="alert">
