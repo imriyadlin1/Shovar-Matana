@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Calendar, Eye, EyeOff, Package, Plus, QrCode, ShoppingBag } from "lucide-react";
+import { ArrowLeftRight, Calendar, Eye, EyeOff, Package, Plus, QrCode, ShoppingBag } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { formatNis } from "@/lib/format/nis";
+import { StripeConnectButton } from "@/components/stripe/StripeConnectButton";
 
 const STATUS_LABEL: Record<string, string> = {
   draft: "רק אצלכם",
@@ -50,11 +51,38 @@ export default async function DashboardPage({
     redirect("/auth/login?next=/dashboard");
   }
 
-  const { data: assets, error } = await supabase
-    .from("assets")
-    .select("*")
-    .eq("owner_id", user.id)
-    .order("created_at", { ascending: false });
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("stripe_account_id, stripe_onboarding_complete")
+    .eq("id", user.id)
+    .single();
+
+  const stripeConnected = !!profile?.stripe_account_id;
+  const stripeComplete = !!profile?.stripe_onboarding_complete;
+
+  const [{ data: assets, error }, { data: txData }] = await Promise.all([
+    supabase
+      .from("assets")
+      .select("*")
+      .eq("owner_id", user.id)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("transactions")
+      .select("amount, platform_fee, status, seller_id")
+      .or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`),
+  ]);
+
+  const completedEarnings = (txData ?? [])
+    .filter((t) => t.seller_id === user.id && t.status === "completed")
+    .reduce((sum, t) => sum + (t.amount - t.platform_fee), 0);
+
+  const pendingEscrow = (txData ?? [])
+    .filter(
+      (t) =>
+        t.seller_id === user.id &&
+        (t.status === "paid" || t.status === "code_sent"),
+    )
+    .reduce((sum, t) => sum + (t.amount - t.platform_fee), 0);
 
   if (error) {
     return (
@@ -141,6 +169,50 @@ export default async function DashboardPage({
               מחיר מבוקש כולל: {formatNis(Math.round(totalAsk))} ₪
             </p>
           )}
+        </div>
+      </div>
+
+      {/* ── Stripe + Transactions ── */}
+      <div className="mt-8 grid gap-4 sm:grid-cols-2">
+        <StripeConnectButton isConnected={stripeConnected} isComplete={stripeComplete} />
+        <div className="card-elevated px-5 py-5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-xs font-semibold text-ink-faint">
+              <ArrowLeftRight className="size-4" strokeWidth={2} aria-hidden />
+              עסקאות
+            </div>
+            <Link
+              href="/dashboard/transactions"
+              className="text-xs font-semibold text-brand underline-offset-4 hover:underline"
+            >
+              הכל →
+            </Link>
+          </div>
+          {completedEarnings > 0 && (
+            <p className="mt-2 text-sm text-money-dark">
+              הכנסות:{" "}
+              <span className="font-bold tabular-nums">
+                {formatNis(Math.round(completedEarnings / 100))} ₪
+              </span>
+            </p>
+          )}
+          {pendingEscrow > 0 && (
+            <p className="mt-1 text-sm text-blue-700">
+              בנאמנות:{" "}
+              <span className="font-bold tabular-nums">
+                {formatNis(Math.round(pendingEscrow / 100))} ₪
+              </span>
+            </p>
+          )}
+          {completedEarnings === 0 && pendingEscrow === 0 && (
+            <p className="mt-2 text-sm text-ink-muted">אין עסקאות עדיין</p>
+          )}
+          <Link
+            href="/dashboard/stripe"
+            className="mt-3 inline-block text-xs font-medium text-brand underline-offset-4 hover:underline"
+          >
+            הגדרות תשלומים
+          </Link>
         </div>
       </div>
 

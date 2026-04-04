@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { formatNis } from "@/lib/format/nis";
 import { voucherImageUrl } from "@/lib/storage/voucherImage";
 import { CopyLinkButton } from "@/components/shared/CopyLinkButton";
+import { BuyButton } from "@/components/market/BuyButton";
 import { startChatWithSeller } from "../actions";
 
 export default async function MarketAssetPage({
@@ -18,7 +19,7 @@ export default async function MarketAssetPage({
   const { data: asset, error } = await supabase
     .from("assets")
     .select(
-      "id, title, nominal_value, ask_price, category, notes, expiry, image_path, status, published_at, contact_name",
+      "id, title, nominal_value, ask_price, category, notes, expiry, image_path, status, published_at, contact_name, owner_id",
     )
     .eq("id", assetId)
     .eq("status", "listed")
@@ -33,6 +34,19 @@ export default async function MarketAssetPage({
   const hasImage = !!asset.image_path;
   const imageUrl = hasImage ? voucherImageUrl(asset.image_path) : null;
   const isExpired = asset.expiry && new Date(asset.expiry) < new Date();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const isOwner = user?.id === asset.owner_id;
+
+  let sellerAcceptsStripe = false;
+  if (!isOwner) {
+    const { data: accepts } = await supabase.rpc("seller_accepts_stripe", {
+      p_seller_id: asset.owner_id,
+    });
+    sellerAcceptsStripe = !!accepts;
+  }
 
   return (
     <main className="page-shell max-w-4xl py-10 pb-24 md:py-14">
@@ -137,23 +151,33 @@ export default async function MarketAssetPage({
 
         <aside className="card-elevated sticky top-28 space-y-6 p-7 shadow-card lg:p-8">
           <div>
-            <h2 className="section-title text-base md:text-lg">רוצים את השובר? דברו ישירות</h2>
+            <h2 className="section-title text-base md:text-lg">רוצים את השובר?</h2>
             <p className="mt-3 text-sm font-medium leading-relaxed text-ink-muted">
-              שובר דיגיטלי — הקוד מועבר בצ׳אט אחרי סגירת עסקה. תסכמו מחיר, תשלום ואיך מעבירים.
+              {sellerAcceptsStripe
+                ? "שלמו מאובטח — הכסף מוחזק בנאמנות עד שתאשרו קבלת הקוד."
+                : "שובר דיגיטלי — הקוד מועבר בצ׳אט אחרי סגירת עסקה. תסכמו מחיר, תשלום ואיך מעבירים."}
             </p>
           </div>
+
+          {sellerAcceptsStripe && !isOwner && (
+            <BuyButton assetId={asset.id} askPrice={ask} />
+          )}
+
           <form action={startChatWithSeller.bind(null, asset.id)}>
             <button type="submit" className="btn-cta w-full py-3.5 text-base font-semibold">
               פתיחת צ׳אט עם המציע
             </button>
           </form>
+
           <div className="rounded-2xl border border-brand/10 bg-brand-faint/30 px-4 py-3">
             <p className="flex items-center gap-2 text-xs font-bold text-brand-deep">
               <QrCode className="size-3.5" strokeWidth={2} />
               איך זה עובד?
             </p>
             <p className="mt-1 text-xs leading-relaxed text-ink-muted">
-              המוכר שומר את קוד השובר / ברקוד במערכת. אחרי שמסכמים מחיר ותשלום בצ׳אט — הוא שולח את הקוד ישירות.
+              {sellerAcceptsStripe
+                ? "לחצו ״שלמו מאובטח״ → הכסף מוחזק בנאמנות → המוכר שולח את הקוד → אשרו קבלה → הכסף משוחרר."
+                : "המוכר שומר את קוד השובר / ברקוד במערכת. אחרי שמסכמים מחיר ותשלום בצ׳אט — הוא שולח את הקוד ישירות."}
             </p>
           </div>
           <CopyLinkButton path={`/market/${asset.id}`} label="שתפו את השובר" />
